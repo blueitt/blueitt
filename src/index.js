@@ -1,26 +1,36 @@
-import { AppContainer } from 'react-hot-loader';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import { AppContainer } from 'react-hot-loader';
+import { Provider } from 'react-redux';
 
-const rootEl = document.getElementById('root');
-ReactDOM.render(
-    <AppContainer>
-    <App />
-    </AppContainer>,
-    rootEl
-);
+import { Router, Route, browserHistory } from 'react-router';
+import { syncHistoryWithStore } from 'react-router-redux';
+
+import configureStore from './configureStore';
+
+import './styles/vendor/foundation.css';
+
+const store = configureStore();
+
+function renderApp() {
+    const rootEl = document.getElementById('root');
+    const App = require('./containers/App').default;
+
+    const toRender = (
+        <AppContainer>
+            <Provider store={store}>
+                <App />
+            </Provider>
+        </AppContainer>
+    );
+
+    ReactDOM.render(toRender, rootEl);
+}
+
+renderApp();
 
 if (module.hot) {
-    module.hot.accept('./App', () => {
-        // If you use Webpack 2 in ES modules mode, you can
-        // use <App /> here rather than require() a <NextApp />.
-        const NextApp = require('./App').default;
-        ReactDOM.render(
-            <AppContainer>
-            <NextApp />
-            </AppContainer>,
-            rootEl
-        );
+    module.hot.accept('./containers/App', () => {
+        renderApp();
     });
 }
