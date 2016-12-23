@@ -1,6 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { AppContainer } from 'react-hot-loader';
 import { Provider } from 'react-redux';
 
 import { Router, Route, browserHistory } from 'react-router';
@@ -8,29 +7,24 @@ import { syncHistoryWithStore } from 'react-router-redux';
 
 import configureStore from './configureStore';
 
-import './styles/vendor/foundation.css';
+import App from './containers/App';
+import Post from './containers/Post';
+import Subreddit from './containers/Subreddit';
 
 const store = configureStore();
+const history = syncHistoryWithStore(browserHistory, store);
 
-function renderApp() {
-    const rootEl = document.getElementById('root');
-    const App = require('./containers/App').default;
+const rootEl = document.getElementById('root');
 
-    const toRender = (
-        <AppContainer>
-            <Provider store={store}>
-                <App />
-            </Provider>
-        </AppContainer>
-    );
+const toRender = (
+    <Provider store={store}>
+        <Router history={history}>
+            <Route path="/" component={App}>
+                <Route path="r/:subreddit" component={Subreddit} />
+                <Route path="r/:subreddit/comments/:postId" component={Post} />
+            </Route>
+        </Router>
+    </Provider>
+);
 
-    ReactDOM.render(toRender, rootEl);
-}
-
-renderApp();
-
-if (module.hot) {
-    module.hot.accept('./containers/App', () => {
-        renderApp();
-    });
-}
+ReactDOM.render(toRender, rootEl);
