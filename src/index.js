@@ -5,13 +5,11 @@ import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
-import 'vendor/snoowrap';
+import configureStore from 'configureStore';
 
-import configureStore from './configureStore';
-
-import App from './containers/App';
-import Post from './containers/Post';
-import Subreddit from './containers/Subreddit';
+import App from 'containers/App';
+import Post from 'containers/Post';
+import Subreddit from 'containers/Subreddit';
 
 const store = configureStore();
 const history = syncHistoryWithStore(browserHistory, store);
@@ -30,5 +28,3 @@ const toRender = (
 );
 
 ReactDOM.render(toRender, rootEl);
-
-console.log(window.snoowrap);

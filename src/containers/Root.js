@@ -2,9 +2,9 @@ import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 
-import App from './App';
-import Subreddit from './Subreddit';
-import Post from './Post';
+import App from 'containers/App';
+import Subreddit from 'containers/Subreddit';
+import Post from 'containers/Post';
 
 export default class Root extends Component {
     render() {
