@@ -5,6 +5,8 @@ import { Provider } from 'react-redux';
 import { Router, Route, browserHistory } from 'react-router';
 import { syncHistoryWithStore } from 'react-router-redux';
 
+import 'vendor/snoowrap';
+
 import configureStore from './configureStore';
 
 import App from './containers/App';
@@ -28,3 +30,5 @@ const toRender = (
 );
 
 ReactDOM.render(toRender, rootEl);
+
+console.log(window.snoowrap);
