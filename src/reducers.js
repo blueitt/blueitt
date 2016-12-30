@@ -1,13 +1,72 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-function redditDatabaseReducer(state = {}, action) {
-    return state;
+import { REQUEST_POSTS, RECEIVE_POSTS } from 'actions';
+
+// function posts(state = {}, action) {
+//     switch (action.type) {
+//         case RECEIVE_POSTS:
+//             const postsById = action.posts.map(post => ({ [post.id]: post }));
+//             return Object.assign({}, state, ...postsById);
+//         default:
+//             return state;
+//     }
+// }
+
+const DEFAULT_SUBREDDIT_STATE = {
+    isLoading: true,
+    posts: {
+        hot: null,
+        new: null,
+        rising: null,
+        gilded: null,
+        topAll: null,
+        topMonth: null,
+        topWeek: null,
+        topDay: null,
+        topHour: null,
+        controversialAll: null,
+        controversialMonth: null,
+        controversialWeek: null,
+        controversialDay: null,
+        controversialHour: null,
+    },
+};
+
+function subreddits(state = {}, action) {
+    switch (action.type) {
+        case REQUEST_POSTS:
+            return {
+                ...state,
+                [action.subreddit]: {
+                    ...DEFAULT_SUBREDDIT_STATE,
+                    ...state[action.subreddit],
+                    isLoading: true,
+                },
+            };
+        case RECEIVE_POSTS:
+            return {
+                ...state,
+                [action.subreddit]: {
+                    ...state[action.subreddit],
+                    isLoading: false,
+                    posts: {
+                        ...state[action.subreddit].posts,
+                        [action.order]: action.posts,
+                    },
+                },
+            };
+        default:
+            return state;
+    }
 }
 
-const rootReducer = combineReducers({
-    redditDatabaseReducer,
-    routing: routerReducer
+const reddit = combineReducers({
+    // posts,
+    subreddits,
 });
 
-export default rootReducer;
+export default combineReducers({
+    reddit,
+    routing: routerReducer
+});

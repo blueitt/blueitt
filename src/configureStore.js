@@ -1,7 +1,8 @@
-import { createStore, applyMiddleware } from 'redux';
+import { applyMiddleware, createStore } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
-import rootReducer from './reducers';
+
+import rootReducer from 'reducers';
 
 const loggerMiddleware = createLogger({ collapsed: true });
 
@@ -12,7 +13,7 @@ export default function configureStore(preloadedState) {
         applyMiddleware(
             thunkMiddleware,
             loggerMiddleware,
-        )
+        ),
     );
 
     if (module.hot) {
