@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { fetchPosts } from 'actions';
+import { fetchSubmissions } from 'actions';
 
 import Subreddit from 'components/Subreddit';
 
@@ -10,14 +10,14 @@ class SubredditContainer extends Component {
     static propTypes = {
         isLoading: PropTypes.bool.isRequired,
         onFetchPosts: PropTypes.func.isRequired,
-        posts: PropTypes.array,
+        submissions: PropTypes.array,
     };
 
     render() {
         return <Subreddit
             isLoading={this.props.isLoading}
-            onFetchPosts={this.props.onFetchPosts}
-            posts={this.props.posts}
+            onFetchSubmissions={this.props.onFetchSubmissions}
+            submissions={this.props.submissions}
         />;
     }
 }
@@ -28,21 +28,21 @@ function mapStateToProps(state, props) {
     if (subreddit === undefined) {
         return {
             isLoading: true,
-            posts: null,
+            submissions: null,
         };
     } else {
-        const posts = subreddit.posts[props.route.order];
+        const submissions = subreddit.submissions[props.route.order];
 
         return {
             isLoading: subreddit.isLoading,
-            posts: posts === null ? null : posts.toJSON(),
+            submissions: submissions === null ? null : submissions.toJSON(),
         };
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        onFetchPosts: fetchPosts,
+        onFetchSubmissions: fetchSubmissions,
     }, dispatch);
 }
 

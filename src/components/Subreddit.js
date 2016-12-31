@@ -1,14 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 
+import SubmissionListItem from 'components/SubmissionListItem';
+
 export default class Subreddit extends Component {
     static propTypes = {
         isLoading: PropTypes.bool.isRequired,
-        onFetchPosts: PropTypes.func.isRequired,
-        posts: PropTypes.array,
+        onFetchSubmissions: PropTypes.func.isRequired,
+        submissions: PropTypes.array,
     }
 
     componentWillMount() {
-        this.props.onFetchPosts(this.props.params.subreddit);
+        this.props.onFetchSubmissions(this.props.params.subreddit);
     }
 
     render() {
@@ -19,16 +21,20 @@ export default class Subreddit extends Component {
                     {this.props.isLoading ? 'loading...' : 'not loading.'}
                 </div>
 
-                {this.props.posts === null ? null : this.renderPosts()}
+                {this.props.submissions === null ? null : this.renderSubmissions()}
             </span>
         );
     }
 
-    renderPosts() {
+    renderSubmissions() {
+        const submissions = this.props.submissions.map((submission, i) => {
+            return <SubmissionListItem key={i} submission={submission} />;
+        });
+
         return (
-            <ol>
-                {this.props.posts.map(post => <li>{post.title}</li>)}
-            </ol>
+            <div>
+                {submissions}
+            </div>
         );
     }
 }

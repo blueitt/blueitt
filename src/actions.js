@@ -10,30 +10,32 @@ function getRequester() {
     });
 }
 
-export const REQUEST_POSTS = 'REQUEST_POSTS';
-function requestPosts(subreddit) {
+export const REQUEST_SUBMISSIONS = 'REQUEST_SUBMISSIONS';
+function requestSubmissions(subreddit) {
     return {
-        type: REQUEST_POSTS,
+        type: REQUEST_SUBMISSIONS,
         subreddit,
     };
 }
 
-// export const FETCH_POSTS = 'FETCH_POSTS';
-export function fetchPosts(subreddit) {
-    return (dispatch) => {
-        dispatch(requestPosts(subreddit));
-
-        getRequester().getHot(subreddit)
-            .then(posts => dispatch(receivePosts(subreddit, 'hot', posts)));
-    };
-}
-
-export const RECEIVE_POSTS = 'RECEIVE_POSTS';
-function receivePosts(subreddit, order, posts) {
+export const RECEIVE_SUBMISSIONS = 'RECEIVE_SUBMISSIONS';
+function receiveSubmissions(subreddit, order, submissions) {
     return {
-        type: RECEIVE_POSTS,
+        type: RECEIVE_SUBMISSIONS,
         subreddit,
         order,
-        posts,
+        submissions,
+    };
+}
+
+export function fetchSubmissions(subreddit) {
+    return (dispatch) => {
+        dispatch(requestSubmissions(subreddit));
+
+        getRequester()
+            .getHot(subreddit)
+            .then(submissions => {
+                dispatch(receiveSubmissions(subreddit, 'hot', submissions))
+            });
     };
 }
