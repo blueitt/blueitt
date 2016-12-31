@@ -9,7 +9,7 @@ import Subreddit from 'components/Subreddit';
 class SubredditContainer extends Component {
     static propTypes = {
         isLoading: PropTypes.bool.isRequired,
-        onFetchPosts: PropTypes.func.isRequired,
+        onFetchSubmissions: PropTypes.func.isRequired,
         submissions: PropTypes.array,
     };
 

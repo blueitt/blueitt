@@ -25,7 +25,6 @@ const toRender = (
                 <Route path="r/:subreddit" component={SubredditContainer} order="hot" />
                 <Route path="r/:subreddit/new" component={SubredditContainer} order="new" />
                 <Route path="r/:subreddit/rising" component={SubredditContainer} order="rising" />
-                <Route path="r/:subreddit/gilded" component={SubredditContainer} order="gilded" />
                 <Route path="r/:subreddit/top" component={SubredditContainer} order="topAll" />
                 <Route path="r/:subreddit/top/month" component={SubredditContainer} order="topMonth" />
                 <Route path="r/:subreddit/top/week" component={SubredditContainer} order="topWeek" />

@@ -10,7 +10,7 @@ export default class Subreddit extends Component {
     }
 
     componentWillMount() {
-        this.props.onFetchSubmissions(this.props.params.subreddit);
+        this.props.onFetchSubmissions(this.props.params.subreddit, this.props.route.order);
     }
 
     render() {
