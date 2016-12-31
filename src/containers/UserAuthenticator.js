@@ -3,13 +3,10 @@ import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 
+import Snoowrap from 'snoowrap';
 import uuid from 'uuid';
 
 export default class UserAuthenticator extends Component {
-    // static propTypes = {
-    //     onUpdateOauthCode: PropTypes.func.isRequired,
-    // };
-
     componentWillMount() {
         const urlParams = new URL(window.location.href).searchParams;
         const authCode = urlParams.get('code');
@@ -20,7 +17,6 @@ export default class UserAuthenticator extends Component {
 
             if (authState === savedState) {
                 this.getAndSaveTokens(authCode);
-                // window.localStorage.setItem('OAUTH_CODE', authCode);
             } else {
                 console.error('TODO: handle OAuth state not matching');
             }
@@ -29,7 +25,7 @@ export default class UserAuthenticator extends Component {
 
     render() {
         const authState = uuid.v4();
-        const authUrl = window.snoowrap.getAuthUrl({
+        const authUrl = Snoowrap.getAuthUrl({
             state: authState,
             scope: ['identity', 'edit', 'read'],
             clientId: 'wxaZ11pMAfDtLw',
@@ -56,7 +52,7 @@ export default class UserAuthenticator extends Component {
     }
 
     getAndSaveTokens(authCode) {
-        const requesterPromise = snoowrap.fromAuthCode({
+        const requesterPromise = Snoowrap.fromAuthCode({
             code: authCode,
             userAgent: 'Blueitt v0.0.1',
             clientId: 'wxaZ11pMAfDtLw',
@@ -67,26 +63,6 @@ export default class UserAuthenticator extends Component {
             .then(requester => {
                 window.localStorage.setItem('REDDIT_ACCESS_TOKEN', requester.accessToken);
                 window.localStorage.setItem('REDDIT_REFRESH_TOKEN', requester.refreshToken);
-                //
-                // const r = new snoowrap({
-                //     userAgent: 'Blueitt v0.0.1',
-                //     clientId: 'wxaZ11pMAfDtLw',
-                //     redirectUri: 'http://127.0.0.1:3000/authenticate',
-                //     accessToken: requester.accessToken,
-                //     refreshToken: requester.refreshToken,
-                // });
-                //
-                // r.getHot('all').then(posts => {
-                //     debugger;
-                // })
             });
     }
 }
-
-// function mapDispatchToProps(dispatch) {
-//     return bindActionCreators({
-//         onUpdateOauthCode: setOauthCode,
-//     }, dispatch);
-// }
-//
-// export default connect(null, mapDispatchToProps)(UserAuthenticator);

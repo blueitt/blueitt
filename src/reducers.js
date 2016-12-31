@@ -3,16 +3,6 @@ import { routerReducer } from 'react-router-redux';
 
 import { REQUEST_POSTS, RECEIVE_POSTS } from 'actions';
 
-// function posts(state = {}, action) {
-//     switch (action.type) {
-//         case RECEIVE_POSTS:
-//             const postsById = action.posts.map(post => ({ [post.id]: post }));
-//             return Object.assign({}, state, ...postsById);
-//         default:
-//             return state;
-//     }
-// }
-
 const DEFAULT_SUBREDDIT_STATE = {
     isLoading: true,
     posts: {

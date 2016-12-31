@@ -8,11 +8,8 @@ import { syncHistoryWithStore } from 'react-router-redux';
 import configureStore from 'configureStore';
 
 import App from 'containers/App';
-import Post from 'containers/Post';
 import SubredditContainer from 'containers/SubredditContainer';
 import UserAuthenticator from 'containers/UserAuthenticator';
-
-import 'vendor/snoowrap';
 
 const store = configureStore();
 const history = syncHistoryWithStore(browserHistory, store);
@@ -39,27 +36,9 @@ const toRender = (
                 <Route path="r/:subreddit/controversial/week" component={SubredditContainer} order="controversialWeek" />
                 <Route path="r/:subreddit/controversial/day" component={SubredditContainer} order="controversialDay" />
                 <Route path="r/:subreddit/controversial/hour" component={SubredditContainer} order="controversialHour" />
-
-                <Route path="r/:subreddit/comments/:postId" component={Post} />
             </Route>
         </Router>
     </Provider>
 );
 
 ReactDOM.render(toRender, rootEl);
-
-// const snoowrap = window.snoowrap;
-//
-// if (oauthCode === null) {
-// } else {
-//     const requester = snoowrap.fromAuthCode({
-//         code: oauthCode,
-//         userAgent: 'Blueitt v0.0.0',
-//         clientId: 'wxaZ11pMAfDtLw',
-//         redirectUri: 'http://127.0.0.1:3000/authenticate',
-//     });
-//
-//     requester
-//         .then(r => r.getHot())
-//         .then(posts => console.log(posts));
-// }
