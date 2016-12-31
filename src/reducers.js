@@ -1,10 +1,11 @@
 import { combineReducers } from 'redux';
 import { routerReducer } from 'react-router-redux';
 
-import { REQUEST_SUBMISSIONS, RECEIVE_SUBMISSIONS } from 'actions';
+import { REQUEST_SUBMISSIONS, RECEIVE_SUBMISSIONS, REQUEST_MORE_SUBMISSIONS } from 'actions';
 
 const DEFAULT_SUBREDDIT_STATE = {
     isLoading: true,
+    isLoadingMore: false,
     submissions: {
         hot: null,
         new: null,
@@ -40,10 +41,19 @@ function subreddits(state = {}, action) {
                 [action.subreddit]: {
                     ...state[action.subreddit],
                     isLoading: false,
+                    isLoadingMore: false,
                     submissions: {
                         ...state[action.subreddit].submissions,
                         [action.order]: action.submissions,
                     },
+                },
+            };
+        case REQUEST_MORE_SUBMISSIONS:
+            return {
+                ...state,
+                [action.subreddit]: {
+                    ...state[action.subreddit],
+                    isLoadingMore: true,
                 },
             };
         default:

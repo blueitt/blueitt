@@ -34,7 +34,7 @@ export function fetchSubmissions(subreddit, order) {
 
         getSubmissionsForOrder(subreddit, order)
             .then(submissions => {
-                dispatch(receiveSubmissions(subreddit, order, submissions))
+                dispatch(receiveSubmissions(subreddit, order, submissions));
             });
     };
 }
@@ -63,6 +63,8 @@ function getSubmissionsForOrder(subreddit, order) {
             return r.getTop(subreddit, { time: 'day' });
         case 'topHour':
             return r.getTop(subreddit, { time: 'hour' });
+        case 'controversialAll':
+            return r.getControversial(subreddit, { time: 'all' });
         case 'controversialYear':
             return r.getControversial(subreddit, { time: 'year' });
         case 'controversialMonth':
@@ -73,5 +75,27 @@ function getSubmissionsForOrder(subreddit, order) {
             return r.getControversial(subreddit, { time: 'day' });
         case 'controversialHour':
             return r.getControversial(subreddit, { time: 'hour' });
+    }
+}
+
+export const REQUEST_MORE_SUBMISSIONS = 'REQUEST_MORE_SUBMISSIONS';
+function requestMoreSubmissions(subreddit) {
+    return {
+        type: REQUEST_MORE_SUBMISSIONS,
+        subreddit,
+    };
+}
+
+export function fetchMoreSubmissions(subreddit, order) {
+    return (dispatch, getState) => {
+        dispatch(requestMoreSubmissions(subreddit));
+
+        const state = getState();
+        const listing = state.reddit.subreddits[subreddit].submissions[order];
+
+        listing.fetchMore({ amount: 25 })
+            .then(submissions => {
+                dispatch(receiveSubmissions(subreddit, order, submissions));
+            });
     }
 }

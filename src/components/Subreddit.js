@@ -5,12 +5,18 @@ import SubmissionListItem from 'components/SubmissionListItem';
 export default class Subreddit extends Component {
     static propTypes = {
         isLoading: PropTypes.bool.isRequired,
+        isLoadingMore: PropTypes.bool.isRequired,
         onFetchSubmissions: PropTypes.func.isRequired,
+        onFetchMoreSubmissions: PropTypes.func.isRequired,
         submissions: PropTypes.array,
     }
 
     componentWillMount() {
         this.props.onFetchSubmissions(this.props.params.subreddit, this.props.route.order);
+    }
+
+    fetchMoreSubmissions() {
+        this.props.onFetchMoreSubmissions(this.props.params.subreddit, this.props.route.order);
     }
 
     render() {
@@ -22,6 +28,14 @@ export default class Subreddit extends Component {
                 </div>
 
                 {this.props.submissions === null ? null : this.renderSubmissions()}
+
+                <div>
+                    {this.props.isLoadingMore ? 'loading more ...' : 'not loading more.'}
+                </div>
+
+                <div onClick={() => this.fetchMoreSubmissions()}>
+                    Click more to load more!
+                </div>
             </span>
         );
     }

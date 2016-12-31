@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 
 export default class SubmissionListItem extends Component {
     static propTypes = {
@@ -6,9 +7,13 @@ export default class SubmissionListItem extends Component {
     };
 
     render() {
+        const submission = this.props.submission;
+
         return (
             <div>
-                <a href={this.props.submission.url}>{this.props.submission.title}</a>
+                <Link to={`/r/${submission.subreddit}/comments/${submission.id}`}>
+                    {submission.title}
+                </Link>
             </div>
         );
     }
