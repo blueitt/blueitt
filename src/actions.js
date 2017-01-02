@@ -99,3 +99,47 @@ export function fetchMoreSubmissions(subreddit, order) {
             });
     }
 }
+
+export const REQUEST_SUBMISSION_COMMENTS = 'REQUEST_SUBMISSION_COMMENTS';
+function requestSubmissionComments(submissionId) {
+    return {
+        type: REQUEST_SUBMISSION_COMMENTS,
+        submissionId,
+    };
+}
+
+export const RECEIVE_SUBMISSION_COMMENTS = 'RECEIVE_SUBMISSION_COMMENTS';
+function receiveSubmissionComments(submissionId, submission) {
+    return {
+        type: RECEIVE_SUBMISSION_COMMENTS,
+        submissionId,
+        submission,
+    };
+}
+
+export function fetchSubmissionComments(submissionId) {
+    return (dispatch) => {
+        dispatch(requestSubmissionComments(submissionId));
+
+        getRequester().getSubmission(submissionId).fetch()
+            .then(submission => {
+                dispatch(receiveSubmissionComments(submissionId, submission));
+            });
+    };
+}
+
+export const REQUEST_MORE_COMMENTS = 'REQUEST_MORE_COMMENTS';
+function requestMoreComments(submissionId, parentIsSubmission, parentCommentId) {
+    return {
+        type: REQUEST_MORE_COMMENTS,
+        submissionId,
+        parentIsSubmission,
+        parentCommentId,
+    };
+}
+
+export function fetchMoreComments(submissionId, fetchRootComments, parentCommentId) {
+    return (dispatch) => {
+        dispatch(requestMoreComments(submissionId, fetchRootComments, parentCommentId));
+    }
+}

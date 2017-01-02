@@ -9,6 +9,7 @@ import configureStore from 'configureStore';
 
 import App from 'containers/App';
 import SubredditContainer from 'containers/SubredditContainer';
+import SubmissionContainer from 'containers/SubmissionContainer';
 import UserAuthenticator from 'containers/UserAuthenticator';
 
 const store = configureStore();
@@ -35,6 +36,8 @@ const toRender = (
                 <Route path="r/:subreddit/controversial/week" component={SubredditContainer} order="controversialWeek" />
                 <Route path="r/:subreddit/controversial/day" component={SubredditContainer} order="controversialDay" />
                 <Route path="r/:subreddit/controversial/hour" component={SubredditContainer} order="controversialHour" />
+
+                <Route path="r/:subreddit/comments/:submissionId" component={SubmissionContainer} />
             </Route>
         </Router>
     </Provider>
