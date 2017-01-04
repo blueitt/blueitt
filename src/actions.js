@@ -91,7 +91,7 @@ export function fetchMoreSubmissions(subreddit, order) {
         dispatch(requestMoreSubmissions(subreddit));
 
         const state = getState();
-        const listing = state.reddit.subreddits[subreddit].submissions[order];
+        const listing = state.reddit.listings.subreddits[subreddit][order];
 
         listing.fetchMore({ amount: 25 })
             .then(submissions => {
@@ -100,30 +100,30 @@ export function fetchMoreSubmissions(subreddit, order) {
     }
 }
 
-export const REQUEST_SUBMISSION_COMMENTS = 'REQUEST_SUBMISSION_COMMENTS';
-function requestSubmissionComments(submissionId) {
+export const REQUEST_SUBMISSION = 'REQUEST_SUBMISSION';
+function requestSubmission(submissionId) {
     return {
-        type: REQUEST_SUBMISSION_COMMENTS,
+        type: REQUEST_SUBMISSION,
         submissionId,
     };
 }
 
-export const RECEIVE_SUBMISSION_COMMENTS = 'RECEIVE_SUBMISSION_COMMENTS';
-function receiveSubmissionComments(submissionId, submission) {
+export const RECEIVE_SUBMISSION = 'RECEIVE_SUBMISSION';
+function receiveSubmission(submissionId, submission) {
     return {
-        type: RECEIVE_SUBMISSION_COMMENTS,
+        type: RECEIVE_SUBMISSION,
         submissionId,
         submission,
     };
 }
 
-export function fetchSubmissionComments(submissionId) {
+export function fetchSubmission(submissionId) {
     return (dispatch) => {
-        dispatch(requestSubmissionComments(submissionId));
+        dispatch(requestSubmission(submissionId));
 
         getRequester().getSubmission(submissionId).fetch()
             .then(submission => {
-                dispatch(receiveSubmissionComments(submissionId, submission));
+                dispatch(receiveSubmission(submissionId, submission));
             });
     };
 }

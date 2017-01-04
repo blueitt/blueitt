@@ -3,7 +3,7 @@ import { routerReducer } from 'react-router-redux';
 
 import {
     REQUEST_SUBMISSIONS, RECEIVE_SUBMISSIONS, REQUEST_MORE_SUBMISSIONS,
-    REQUEST_SUBMISSION_COMMENTS, RECEIVE_SUBMISSION_COMMENTS, REQUEST_MORE_COMMENTS,
+    REQUEST_SUBMISSION, RECEIVE_SUBMISSION, REQUEST_MORE_COMMENTS,
 } from 'actions';
 
 const DEFAULT_SUBREDDIT_STATE = {
@@ -44,10 +44,11 @@ function subreddits(state = {}, action) {
                 [action.subreddit]: {
                     ...state[action.subreddit],
                     isLoading: false,
-                    isLoadingMore: false,
                     submissions: {
                         ...state[action.subreddit].submissions,
-                        [action.order]: action.submissions,
+                        [action.order]: [
+                            ...action.submissions.map(submission => submission.id)
+                        ],
                     },
                 },
             };
@@ -64,6 +65,13 @@ function subreddits(state = {}, action) {
     }
 }
 
+function serializeSubmission(submission) {
+    return {
+        ...submission.toJSON(),
+        comments: [...submission.comments.map(c => c.id)],
+    };
+}
+
 const DEFAULT_SUBMISSION_STATE = {
     isLoading: true,
     submission: null,
@@ -71,78 +79,131 @@ const DEFAULT_SUBMISSION_STATE = {
 
 function submissions(state = {}, action) {
     switch (action.type) {
-        case REQUEST_SUBMISSION_COMMENTS:
+        case RECEIVE_SUBMISSIONS:
+            return Object.assign(
+                {},
+                state,
+                ...action.submissions.map(s => ({ [s.id]: serializeSubmission(s) }))
+            );
+        case REQUEST_SUBMISSION:
             return {
                 ...state,
                 [action.submissionId]: {
                     ...DEFAULT_SUBMISSION_STATE,
-                    ...state[action.submissionId],
                     isLoading: true,
                 },
             };
-        case RECEIVE_SUBMISSION_COMMENTS:
+        case RECEIVE_SUBMISSION:
             return {
                 ...state,
                 [action.submissionId]: {
                     ...state[action.submissionId],
                     isLoading: false,
-                    submission: makeLoadingMoreComments(action.submission, false, null),
+                    submission: serializeSubmission(action.submission),
                 },
             };
-        case REQUEST_MORE_COMMENTS:
-            return {
-                ...state,
-                [action.submissionId]: {
-                    ...state[action.submissionId],
-                    submission: makeLoadingMoreComments(
-                        state[action.submissionId].submission,
-                        action.parentIsSubmission,
-                        action.parentCommentId
-                    ),
-                },
-            }
         default:
             return state;
     }
 }
 
-// If `markRootComments`, mark the root comments be loading more. Also, mark
-// any comments with id `parentCommentId` as loading more.
-function makeLoadingMoreComments(submission, markRootComments, parentCommentId) {
-    const result = submission._clone();
+function flattenCommentsTree(comment) {
+    const replies = [].concat(...comment.replies.map(flattenCommentsTree));
 
-    if (result.comments._more === null) {
-        result.comments._more = {};
-    }
+    const serializedComment = {
+        ...comment.toJSON(),
+        replies: replies.map(c => c.id),
+    };
 
-    result.comments._more.isLoadingMore = markRootComments;
-
-    result.comments = result.comments.map(comment => {
-        return makeCommentLoadingMoreComments(comment, parentCommentId);
-    });
-
-    return result;
+    return [serializedComment, ...replies];
 }
 
-function makeCommentLoadingMoreComments(comment, parentCommentId) {
-    const result = comment._clone();
+function comments(state = {}, action) {
+    switch (action.type) {
+        case RECEIVE_SUBMISSION:
+            const rootComments = action.submission.comments;
+            const allComments = [].concat(...rootComments.map(flattenCommentsTree));
 
-    if (result.replies._more === null) {
-        result.replies._more = {};
+            return Object.assign(
+                {},
+                state,
+                ...allComments.map(c => ({ [c.id]: c }))
+            )
+        default:
+            return state;
     }
-
-    result.replies._more.isLoadingMore = result.id === parentCommentId;
-
-    result.replies = result.replies.map(reply => {
-        return makeCommentLoadingMoreComments(reply, parentCommentId);
-    });
-
-    return result;
 }
+
+function submissionListings(state = {}, action) {
+    switch (action.type) {
+        case RECEIVE_SUBMISSIONS:
+            return {
+                ...state,
+                [action.subreddit]: {
+                    ...state[action.subreddit],
+                    [action.order]: action.submissions,
+                },
+            };
+        default:
+            return state;
+    }
+}
+
+const COMMENT_LISTINGS_DEFAULT_STATE = {
+    rootComments: {}, // submissionId -> top-level comments
+    replyComments: {}, // commentId -> replies to that comment
+};
+
+function getListingsFromSubmission(submission) {
+    const replyListings = submission.comments.map(c => getListingsFromComment(c));
+
+    return {
+        rootListing: submission.comments,
+        replyListings: Object.assign({}, ...replyListings),
+    };
+}
+
+function getListingsFromComment(comment) {
+    const replyListings = comment.replies.map(c => getListingsFromComment(c));
+    return Object.assign(
+        {},
+        { [comment.id]: comment.replies },
+        ...replyListings,
+    );
+}
+
+function commentListings(state = COMMENT_LISTINGS_DEFAULT_STATE, action) {
+    switch (action.type) {
+        case RECEIVE_SUBMISSION:
+            const { rootListing, replyListings } = getListingsFromSubmission(action.submission);
+
+            return {
+                ...state,
+                rootComments: {
+                    ...state.rootComments,
+                    [action.submission.id]: rootListing,
+                },
+                replyComments: Object.assign(
+                    {},
+                    state.replyComments,
+                    replyListings,
+                ),
+            };
+        default:
+            return state;
+    }
+}
+
+const listings = combineReducers({
+    submissions: submissionListings,
+    comments: commentListings,
+});
 
 const reddit = combineReducers({
     subreddits,
     submissions,
+    comments,
+    listings,
 });
 
 export default combineReducers({

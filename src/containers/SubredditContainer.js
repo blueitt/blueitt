@@ -35,12 +35,12 @@ function mapStateToProps(state, props) {
             submissions: null,
         };
     } else {
-        const submissions = subreddit.submissions[props.route.order];
+        const submissionIds = subreddit.submissions[props.route.order];
 
         return {
             isLoading: subreddit.isLoading,
             isLoadingMore: subreddit.isLoadingMore,
-            submissions: submissions === null ? null : submissions.toJSON(),
+            submissions: submissionIds === null ? null : submissionIds.map(id => state.reddit.submissions[id]),
         };
     }
 }
