@@ -42,8 +42,6 @@ export function fetchSubmissions(subreddit, order) {
 function getSubmissionsForOrder(subreddit, order) {
     const r = getRequester();
 
-    console.log(order);
-
     switch (order) {
         case 'hot':
             return r.getHot(subreddit);
@@ -91,7 +89,7 @@ export function fetchMoreSubmissions(subreddit, order) {
         dispatch(requestMoreSubmissions(subreddit));
 
         const state = getState();
-        const listing = state.reddit.listings.subreddits[subreddit][order];
+        const listing = state.reddit.listings.submissions[subreddit][order];
 
         listing.fetchMore({ amount: 25 })
             .then(submissions => {
@@ -138,8 +136,29 @@ function requestMoreComments(submissionId, parentIsSubmission, parentCommentId) 
     };
 }
 
+export const RECEIVE_MORE_COMMENTS = 'RECEIVE_MORE_COMMENTS';
+function receiveMoreComments(submissionId, parentIsSubmission, parentCommentId, comments) {
+    return {
+        type: RECEIVE_MORE_COMMENTS,
+        submissionId,
+        parentIsSubmission,
+        parentCommentId,
+        comments,
+    };
+}
+
 export function fetchMoreComments(submissionId, fetchRootComments, parentCommentId) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch(requestMoreComments(submissionId, fetchRootComments, parentCommentId));
+
+        const state = getState();
+        const listing = fetchRootComments
+            ? state.reddit.listings.comments.rootComments[submissionId]
+            : state.reddit.listings.comments.replyComments[parentCommentId];
+
+        listing.fetchMore({ amount: 25 })
+            .then(comments => {
+                dispatch(receiveMoreComments(submissionId, fetchRootComments, parentCommentId, comments));
+            })
     }
 }

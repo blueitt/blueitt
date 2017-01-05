@@ -3,7 +3,7 @@ import { routerReducer } from 'react-router-redux';
 
 import {
     REQUEST_SUBMISSIONS, RECEIVE_SUBMISSIONS, REQUEST_MORE_SUBMISSIONS,
-    REQUEST_SUBMISSION, RECEIVE_SUBMISSION, REQUEST_MORE_COMMENTS,
+    REQUEST_SUBMISSION, RECEIVE_SUBMISSION, REQUEST_MORE_COMMENTS, RECEIVE_MORE_COMMENTS
 } from 'actions';
 
 const DEFAULT_SUBREDDIT_STATE = {
@@ -74,7 +74,10 @@ function serializeSubmission(submission) {
 
 const DEFAULT_SUBMISSION_STATE = {
     isLoading: true,
+    isLoadingMoreComments: false,
     submission: null,
+    hasMoreComments: false,
+    moreCommentsCount: null,
 };
 
 function submissions(state = {}, action) {
@@ -94,41 +97,148 @@ function submissions(state = {}, action) {
                 },
             };
         case RECEIVE_SUBMISSION:
+            const hasMoreComments = !action.submission.comments.isFinished;
+            const moreCommentsCount = hasMoreComments
+                ? action.submission.comments._more.count
+                : null;
+
             return {
                 ...state,
                 [action.submissionId]: {
                     ...state[action.submissionId],
                     isLoading: false,
                     submission: serializeSubmission(action.submission),
+                    hasMoreComments,
+                    moreCommentsCount,
                 },
             };
+        case REQUEST_MORE_COMMENTS:
+            if (action.parentIsSubmission) {
+                return {
+                    ...state,
+                    [action.submissionId]: {
+                        ...state[action.submissionId],
+                        isLoadingMoreComments: true,
+                    }
+                }
+            } else {
+                return state;
+            }
+        case RECEIVE_MORE_COMMENTS:
+            if (action.parentIsSubmission) {
+                const comments = [...action.comments.map(c => c.id)];
+                const hasMoreComments = !action.comments.isFinished;
+                const moreCommentsCount = hasMoreComments
+                    ? action.comments._more.count
+                    : null;
+
+                const newSubmission = {
+                    ...state[action.submissionId],
+                    isLoadingMoreComments: false,
+                    hasMoreComments,
+                    moreCommentsCount,
+                    submission: {
+                        ...state[action.submissionId].submission,
+                        comments,
+                    },
+                };
+
+                return {
+                    ...state,
+                    [action.submissionId]: newSubmission,
+                };
+            } else {
+                return state;
+            }
         default:
             return state;
     }
 }
 
+const DEFAULT_COMMENT_STATE = {
+    comment: null,
+    isLoadingMoreReplies: false,
+    hasMoreReplies: false,
+    moreRepliesCount: null,
+};
+
 function flattenCommentsTree(comment) {
-    const replies = [].concat(...comment.replies.map(flattenCommentsTree));
+    const hasMoreReplies = !comment.replies.isFinished;
+
+    const moreRepliesCount = hasMoreReplies
+        ? (comment.replies._more ? comment.replies._more.count : null)
+        : null;
 
     const serializedComment = {
-        ...comment.toJSON(),
-        replies: replies.map(c => c.id),
+        ...DEFAULT_COMMENT_STATE,
+        hasMoreReplies,
+        moreRepliesCount,
+        comment: {
+            ...comment.toJSON(),
+            replies: [...comment.replies.map(c => c.id)],
+        },
     };
 
-    return [serializedComment, ...replies];
+    return Object.assign(
+        {},
+        { [comment.id]: serializedComment },
+        ...comment.replies.map(reply => flattenCommentsTree(reply)),
+    );
 }
 
 function comments(state = {}, action) {
     switch (action.type) {
         case RECEIVE_SUBMISSION:
-            const rootComments = action.submission.comments;
-            const allComments = [].concat(...rootComments.map(flattenCommentsTree));
+            return Object.assign(
+                {},
+                state,
+                ...action.submission.comments.map(c => flattenCommentsTree(c)),
+            );
+        case REQUEST_MORE_COMMENTS:
+            if (action.parentIsSubmission) {
+                return state;
+            }
+
+            return {
+                ...state,
+                [action.parentCommentId]: {
+                    ...state[action.parentCommentId],
+                    isLoadingMoreReplies: true,
+                }
+            }
+        case RECEIVE_MORE_COMMENTS:
+            const newComments = action.comments.map(c => flattenCommentsTree(c));
+            if (action.parentIsSubmission) {
+                return Object.assign(
+                    {},
+                    state,
+                    ...newComments,
+                );
+            }
+
+            const hasMoreReplies = !action.comments.isFinished;
+
+            const moreRepliesCount = hasMoreReplies
+                ? (action.comments._more ? action.comments._more.count : null)
+                : null;
+
+            const updatedComment = {
+                ...state[action.parentCommentId],
+                isLoadingMoreReplies: false,
+                hasMoreReplies,
+                moreRepliesCount,
+                comment: {
+                    ...state[action.parentCommentId].comment,
+                    replies: [...action.comments.map(c => c.id)],
+                },
+            };
 
             return Object.assign(
                 {},
                 state,
-                ...allComments.map(c => ({ [c.id]: c }))
-            )
+                { [action.parentCommentId]: updatedComment },
+                ...newComments,
+            );
         default:
             return state;
     }
@@ -155,12 +265,15 @@ const COMMENT_LISTINGS_DEFAULT_STATE = {
 };
 
 function getListingsFromSubmission(submission) {
-    const replyListings = submission.comments.map(c => getListingsFromComment(c));
-
     return {
         rootListing: submission.comments,
-        replyListings: Object.assign({}, ...replyListings),
+        replyListings: getListingsFromCommentList(submission.comments),
     };
+}
+
+function getListingsFromCommentList(commentList) {
+    const listings = commentList.map(c => getListingsFromComment(c));
+    return Object.assign({}, ...listings);
 }
 
 function getListingsFromComment(comment) {
@@ -189,6 +302,33 @@ function commentListings(state = COMMENT_LISTINGS_DEFAULT_STATE, action) {
                     replyListings,
                 ),
             };
+        case RECEIVE_MORE_COMMENTS:
+            const commentReplyListings = getListingsFromCommentList(action.comments);
+
+            if (action.parentIsSubmission) {
+                return {
+                    ...state,
+                    rootComments: {
+                        ...state.rootComments,
+                        [action.submissionId]: action.comments,
+                    },
+                    replyComments: Object.assign(
+                        {},
+                        state.replyComments,
+                        commentReplyListings,
+                    ),
+                };
+            } else {
+                return {
+                    ...state,
+                    replyComments: Object.assign(
+                        {},
+                        state.replyComments,
+                        { [action.parentCommentId]: action.comments },
+                        commentReplyListings,
+                    ),
+                };
+            }
         default:
             return state;
     }

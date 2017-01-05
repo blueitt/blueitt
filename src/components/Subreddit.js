@@ -4,6 +4,8 @@ import SubmissionListItem from 'components/SubmissionListItem';
 
 export default class Subreddit extends Component {
     static propTypes = {
+        subredditName: PropTypes.string.isRequired,
+        subredditOrder: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isLoadingMore: PropTypes.bool.isRequired,
         onFetchSubmissions: PropTypes.func.isRequired,
@@ -12,11 +14,11 @@ export default class Subreddit extends Component {
     }
 
     componentWillMount() {
-        this.props.onFetchSubmissions(this.props.params.subreddit, this.props.route.order);
+        this.props.onFetchSubmissions(this.props.subredditName, this.props.subredditOrder);
     }
 
     fetchMoreSubmissions() {
-        this.props.onFetchMoreSubmissions(this.props.params.subreddit, this.props.route.order);
+        this.props.onFetchMoreSubmissions(this.props.subredditName, this.props.subredditOrder);
     }
 
     render() {

@@ -8,6 +8,8 @@ import Subreddit from 'components/Subreddit';
 
 class SubredditContainer extends Component {
     static propTypes = {
+        subredditName: PropTypes.string.isRequired,
+        subredditOrder: PropTypes.string.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isLoadingMore: PropTypes.bool.isRequired,
         onFetchSubmissions: PropTypes.func.isRequired,
@@ -17,19 +19,27 @@ class SubredditContainer extends Component {
 
     render() {
         return <Subreddit
+            subredditName={this.props.subredditName}
+            subredditOrder={this.props.subredditOrder}
             isLoading={this.props.isLoading}
             isLoadingMore={this.props.isLoadingMore}
-            onFetchSubmissions={this.props.onFetchSubmissions}
             submissions={this.props.submissions}
+            onFetchSubmissions={this.props.onFetchSubmissions}
+            onFetchMoreSubmissions={this.props.onFetchMoreSubmissions}
         />;
     }
 }
 
 function mapStateToProps(state, props) {
     const subreddit = state.reddit.subreddits[props.params.subreddit];
+    const propsFromRouter = {
+        subredditName: props.params.subreddit,
+        subredditOrder: props.route.order,
+    };
 
     if (subreddit === undefined) {
         return {
+            ...propsFromRouter,
             isLoading: true,
             isLoadingMore: false,
             submissions: null,
@@ -38,6 +48,7 @@ function mapStateToProps(state, props) {
         const submissionIds = subreddit.submissions[props.route.order];
 
         return {
+            ...propsFromRouter,
             isLoading: subreddit.isLoading,
             isLoadingMore: subreddit.isLoadingMore,
             submissions: submissionIds === null ? null : submissionIds.map(id => state.reddit.submissions[id]),
@@ -52,4 +63,4 @@ function mapDispatchToProps(dispatch) {
     }, dispatch);
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Subreddit);
+export default connect(mapStateToProps, mapDispatchToProps)(SubredditContainer);
