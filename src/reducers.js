@@ -3,7 +3,8 @@ import { routerReducer } from 'react-router-redux';
 
 import {
     REQUEST_SUBMISSIONS, RECEIVE_SUBMISSIONS, REQUEST_MORE_SUBMISSIONS,
-    REQUEST_SUBMISSION, RECEIVE_SUBMISSION, REQUEST_MORE_COMMENTS, RECEIVE_MORE_COMMENTS
+    REQUEST_SUBMISSION, RECEIVE_SUBMISSION, REQUEST_MORE_COMMENTS, RECEIVE_MORE_COMMENTS,
+    SAVE_AUTH_STATE, SAVE_ACCESS_TOKEN,
 } from 'actions';
 
 const DEFAULT_SUBREDDIT_STATE = {
@@ -346,7 +347,30 @@ const reddit = combineReducers({
     listings,
 });
 
+const DEFAULT_AUTH_STATE = {
+    state: null,
+    accessToken: null,
+};
+
+function auth(state = DEFAULT_AUTH_STATE, action) {
+    switch (action.type) {
+        case SAVE_AUTH_STATE:
+            return {
+                ...state,
+                state: action.authState,
+            };
+        case SAVE_ACCESS_TOKEN:
+            return {
+                ...state,
+                accessToken: action.accessToken,
+            };
+        default:
+            return state;
+    }
+}
+
 export default combineReducers({
     reddit,
+    auth,
     routing: routerReducer
 });

@@ -1,6 +1,7 @@
-import { applyMiddleware, createStore } from 'redux';
+import { applyMiddleware, createStore, compose } from 'redux';
 import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
+import persistState from 'redux-localstorage';
 
 import rootReducer from 'reducers';
 
@@ -10,10 +11,13 @@ export default function configureStore(preloadedState) {
     const store = createStore(
         rootReducer,
         preloadedState,
-        applyMiddleware(
-            thunkMiddleware,
-            loggerMiddleware,
-        ),
+        compose(
+            applyMiddleware(
+                thunkMiddleware,
+                loggerMiddleware,
+            ),
+            persistState(),
+        )
     );
 
     if (module.hot) {

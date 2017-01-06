@@ -10,9 +10,10 @@ import configureStore from 'configureStore';
 import App from 'containers/App';
 import SubredditContainer from 'containers/SubredditContainer';
 import SubmissionContainer from 'containers/SubmissionContainer';
-import UserAuthenticator from 'containers/UserAuthenticator';
+import UserAuthenticatorContainer from 'containers/UserAuthenticatorContainer';
 
 const store = configureStore();
+
 const history = syncHistoryWithStore(browserHistory, store);
 
 const rootEl = document.getElementById('root');
@@ -21,7 +22,7 @@ const toRender = (
     <Provider store={store}>
         <Router history={history}>
             <Route path="/" component={App}>
-                <Route path="authenticate" component={UserAuthenticator} />
+                <Route path="authenticate" component={UserAuthenticatorContainer} />
 
                 <Route path="r/:subreddit" component={SubredditContainer} order="hot" />
                 <Route path="r/:subreddit/new" component={SubredditContainer} order="new" />
