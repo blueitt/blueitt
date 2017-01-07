@@ -16,7 +16,7 @@ export function getAuthUrl(authState) {
     return getSnoocore().getAuthUrl(authState);
 }
 
-export function getSubredditSubmissions(token, subreddit, order) {
+export function getSubredditSubmissions(token, subreddit, order, nextSubmissionName) {
     const reddit = getSnoocore();
 
     const options = {
@@ -40,7 +40,11 @@ export function getSubredditSubmissions(token, subreddit, order) {
     return reddit.auth(token)
         .then(() => {
             const [request, params] = options[order];
-            return request.get(params);
+
+            return request.get({
+                ...params,
+                after: nextSubmissionName,
+            });
         });
 }
 

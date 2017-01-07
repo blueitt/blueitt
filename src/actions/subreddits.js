@@ -20,6 +20,26 @@ export function receiveSubredditSubmissions(subreddit, order, submissions, nextS
     };
 }
 
+export const REQUEST_MORE_SUBREDDIT_SUBMISSIONS = 'REQUEST_MORE_SUBREDDIT_SUBMISSIONS';
+export function requestMoreSubredditSubmissions(subreddit, order) {
+    return {
+        type: REQUEST_MORE_SUBREDDIT_SUBMISSIONS,
+        subreddit,
+        order,
+    };
+}
+
+export const RECEIVE_MORE_SUBREDDIT_SUBMISSIONS = 'RECEIVE_MORE_SUBREDDIT_SUBMISSIONS';
+export function receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName) {
+    return {
+        type: RECEIVE_MORE_SUBREDDIT_SUBMISSIONS,
+        subreddit,
+        order,
+        submissions,
+        nextSubmissionName,
+    };
+}
+
 export function fetchSubreddit(subreddit, order) {
     return (dispatch, getState) => {
         dispatch(requestSubreddit(subreddit, order));
@@ -38,14 +58,18 @@ export function fetchSubreddit(subreddit, order) {
 
 export function fetchMoreSubmissions(subreddit, order) {
     return (dispatch, getState) => {
-        dispatch(requestMoreSubmissions(subreddit));
-    //
-    //     const state = getState();
-    //     const listing = state.reddit.listings.submissions[subreddit][order];
-    //
-    //     listing.fetchMore({ amount: 25 })
-    //         .then(submissions => {
-    //             dispatch(receiveSubmissions(subreddit, order, submissions));
-    //         });
+        dispatch(requestMoreSubredditSubmissions(subreddit, order));
+
+        const state = getState();
+        const token = state.auth.accessToken;
+        const nextSubmissionName = state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
+
+        api.getSubredditSubmissions(token, subreddit, order, nextSubmissionName)
+            .then(listing => {
+                const submissions = listing.data.children.map(c => c.data);
+                const nextSubmissionName = listing.data.after;
+
+                dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName));
+            });
     }
 }

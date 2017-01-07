@@ -1,8 +1,12 @@
-import { RECEIVE_SUBREDDIT_SUBMISSIONS } from 'actions/subreddits';
+import {
+    RECEIVE_SUBREDDIT_SUBMISSIONS,
+    RECEIVE_MORE_SUBREDDIT_SUBMISSIONS,
+} from 'actions/subreddits';
 
 export default function submissions(state = {}, action) {
     switch (action.type) {
         case RECEIVE_SUBREDDIT_SUBMISSIONS:
+        case RECEIVE_MORE_SUBREDDIT_SUBMISSIONS:
             const newSubmissions = action.submissions.map(submission => {
                 return {
                     [submission.id]: {

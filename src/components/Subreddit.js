@@ -44,8 +44,6 @@ export default class Subreddit extends Component {
     }
 
     renderSubmissions() {
-        console.log(this.props);
-
         const submissions = this.props.submissionIds.map((submissionId, i) => {
             const submission = this.props.submissionsById[submissionId].submission;
             return <SubmissionListItem key={i} submission={submission} />;

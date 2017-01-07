@@ -16,7 +16,7 @@ export default function configureStore(preloadedState) {
                 thunkMiddleware,
                 loggerMiddleware,
             ),
-            persistState(),
+            persistState('auth'),
         )
     );
 
