@@ -6,15 +6,16 @@ export default class Subreddit extends Component {
     static propTypes = {
         subredditName: PropTypes.string.isRequired,
         subredditOrder: PropTypes.string.isRequired,
-        isLoading: PropTypes.bool.isRequired,
+        isLoadingFirst: PropTypes.bool.isRequired,
         isLoadingMore: PropTypes.bool.isRequired,
-        onFetchSubmissions: PropTypes.func.isRequired,
+        onFetchSubreddit: PropTypes.func.isRequired,
         onFetchMoreSubmissions: PropTypes.func.isRequired,
-        submissions: PropTypes.array,
+        submissionIds: PropTypes.array,
+        submissionsById: PropTypes.object.isRequired,
     }
 
     componentWillMount() {
-        this.props.onFetchSubmissions(this.props.subredditName, this.props.subredditOrder);
+        this.props.onFetchSubreddit(this.props.subredditName, this.props.subredditOrder);
     }
 
     fetchMoreSubmissions() {
@@ -24,12 +25,12 @@ export default class Subreddit extends Component {
     render() {
         return (
             <span>
-                <h2>/r/something</h2>
+                <h2>/r/{this.props.subredditName}</h2>
                 <div>
-                    {this.props.isLoading ? 'loading...' : 'not loading.'}
+                    {this.props.isLoadingFirst ? 'loading...' : 'not loading.'}
                 </div>
 
-                {this.props.submissions === null ? null : this.renderSubmissions()}
+                {this.props.submissionIds === null ? null : this.renderSubmissions()}
 
                 <div>
                     {this.props.isLoadingMore ? 'loading more ...' : 'not loading more.'}
@@ -43,7 +44,10 @@ export default class Subreddit extends Component {
     }
 
     renderSubmissions() {
-        const submissions = this.props.submissions.map((submission, i) => {
+        console.log(this.props);
+
+        const submissions = this.props.submissionIds.map((submissionId, i) => {
+            const submission = this.props.submissionsById[submissionId].submission;
             return <SubmissionListItem key={i} submission={submission} />;
         });
 

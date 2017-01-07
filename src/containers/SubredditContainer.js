@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { fetchSubmissions, fetchMoreSubmissions } from 'actions';
+import { fetchSubreddit, fetchMoreSubmissions } from 'actions/subreddits';
 
 import Subreddit from 'components/Subreddit';
 
@@ -10,55 +10,58 @@ class SubredditContainer extends Component {
     static propTypes = {
         subredditName: PropTypes.string.isRequired,
         subredditOrder: PropTypes.string.isRequired,
-        isLoading: PropTypes.bool.isRequired,
+        isLoadingFirst: PropTypes.bool.isRequired,
         isLoadingMore: PropTypes.bool.isRequired,
-        onFetchSubmissions: PropTypes.func.isRequired,
+        onFetchSubreddit: PropTypes.func.isRequired,
         onFetchMoreSubmissions: PropTypes.func.isRequired,
-        submissions: PropTypes.array,
+        submissionIds: PropTypes.array,
+        submissionsById: PropTypes.object.isRequired,
     };
 
     render() {
         return <Subreddit
             subredditName={this.props.subredditName}
             subredditOrder={this.props.subredditOrder}
-            isLoading={this.props.isLoading}
+            isLoadingFirst={this.props.isLoadingFirst}
             isLoadingMore={this.props.isLoadingMore}
-            submissions={this.props.submissions}
-            onFetchSubmissions={this.props.onFetchSubmissions}
+            onFetchSubreddit={this.props.onFetchSubreddit}
             onFetchMoreSubmissions={this.props.onFetchMoreSubmissions}
+            submissionIds={this.props.submissionIds}
+            submissionsById={this.props.submissionsById}
         />;
     }
 }
 
 function mapStateToProps(state, props) {
     const subreddit = state.reddit.subreddits[props.params.subreddit];
-    const propsFromRouter = {
+    const commonProps = {
         subredditName: props.params.subreddit,
         subredditOrder: props.route.order,
+        submissionsById: state.reddit.submissions,
     };
 
     if (subreddit === undefined) {
         return {
-            ...propsFromRouter,
-            isLoading: true,
+            ...commonProps,
+            isLoadingFirst: true,
             isLoadingMore: false,
-            submissions: null,
+            submissionIds: null,
         };
     } else {
-        const submissionIds = subreddit.submissions[props.route.order];
+        const subredditSubmissions = subreddit.submissions[props.route.order];
 
         return {
-            ...propsFromRouter,
-            isLoading: subreddit.isLoading,
-            isLoadingMore: subreddit.isLoadingMore,
-            submissions: submissionIds === null ? null : submissionIds.map(id => state.reddit.submissions[id]),
+            ...commonProps,
+            isLoadingFirst: subredditSubmissions.isLoadingFirst,
+            isLoadingMore: subredditSubmissions.isLoadingMore,
+            submissionIds: subredditSubmissions.submissionIds,
         };
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
-        onFetchSubmissions: fetchSubmissions,
+        onFetchSubreddit: fetchSubreddit,
         onFetchMoreSubmissions: fetchMoreSubmissions,
     }, dispatch);
 }

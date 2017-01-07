@@ -1,7 +1,8 @@
 import React, { Component, PropTypes } from 'react';
 
-import Snoocore from 'snoocore';
 import uuid from 'uuid';
+
+import { getAuthUrl } from 'api';
 
 export default class UserAuthenticator extends Component {
     static propTypes = {
@@ -11,15 +12,6 @@ export default class UserAuthenticator extends Component {
     };
 
     getUnauthedReddit() {
-        return new Snoocore({
-            userAgent: 'Blueitt v0.0.1',
-            oauth: {
-                type: 'implicit',
-                key: 'wxaZ11pMAfDtLw',
-                redirectUri: 'http://127.0.0.1:3000/authenticate',
-                scope: ['read', 'identity'],
-            },
-        });
     }
 
     componentWillMount() {
@@ -47,9 +39,7 @@ export default class UserAuthenticator extends Component {
 
     render() {
         const authState = uuid.v4();
-        const reddit = this.getUnauthedReddit();
-
-        const authUrl = reddit.getAuthUrl(authState);
+        const authUrl = getAuthUrl(authState);
 
         return (
             <div>

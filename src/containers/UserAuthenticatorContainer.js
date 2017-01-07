@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { saveAuthState, saveAccessToken } from 'actions';
+import { saveAuthState, saveAccessToken } from 'actions/auth';
 
 import UserAuthenticator from 'components/UserAuthenticator';
 
