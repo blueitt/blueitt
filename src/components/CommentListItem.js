@@ -6,13 +6,16 @@ import React, { Component, PropTypes } from 'react';
 export default class CommentListItem extends Component {
     static propTypes = {
         comment: PropTypes.object.isRequired,
-        hasMoreReplies: PropTypes.bool.isRequired,
-        moreRepliesCount: PropTypes.number,
-        isLoadingMoreReplies: PropTypes.bool.isRequired,
-        submissionId: PropTypes.string.isRequired,
-        indentLevel: PropTypes.number.isRequired,
         commentsById: PropTypes.object.isRequired,
+        hasContinueThisThread: PropTypes.bool.isRequired,
+        hasMoreReplies: PropTypes.bool.isRequired,
+        indentLevel: PropTypes.number.isRequired,
+        isLoadingMoreReplies: PropTypes.bool.isRequired,
+        moreRepliesCount: PropTypes.number,
+        moreRepliesIds: PropTypes.array,
         onFetchMoreComments: PropTypes.func.isRequired,
+        replyIds: PropTypes.array,
+        submissionId: PropTypes.string.isRequired,
     };
 
     fetchMoreReplies() {
@@ -33,19 +36,22 @@ export default class CommentListItem extends Component {
     }
 
     renderReplies() {
-        return this.props.comment.replies.map((commentId, i) => {
+        return this.props.replyIds.map((commentId, i) => {
             const comment = this.props.commentsById[commentId];
 
             return <CommentListItem
-                key={i}
                 comment={comment.comment}
-                hasMoreReplies={comment.hasMoreReplies}
-                moreRepliesCount={comment.moreRepliesCount}
-                isLoadingMoreReplies={comment.isLoadingMoreReplies}
-                submissionId={this.props.submissionId}
-                indentLevel={this.props.indentLevel + 1}
                 commentsById={this.props.commentsById}
+                hasContinueThisThread={comment.hasContinueThisThread}
+                hasMoreReplies={comment.hasMoreReplies}
+                indentLevel={this.props.indentLevel + 1}
+                isLoadingMoreReplies={comment.isLoadingMoreReplies}
+                key={i}
+                moreRepliesCount={comment.moreRepliesCount}
+                moreRepliesIds={comment.moreRepliesIds}
                 onFetchMoreComments={this.props.onFetchMoreComments}
+                replyIds={comment.replyIds}
+                submissionId={this.props.submissionId}
             />;
         });
     }

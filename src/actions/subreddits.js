@@ -1,7 +1,7 @@
 import * as api from 'api';
 
 export const REQUEST_SUBREDDIT = 'REQUEST_SUBREDDIT';
-export function requestSubreddit(subreddit, order) {
+function requestSubreddit(subreddit, order) {
     return {
         type: REQUEST_SUBREDDIT,
         subreddit,
@@ -10,7 +10,7 @@ export function requestSubreddit(subreddit, order) {
 }
 
 export const RECEIVE_SUBREDDIT_SUBMISSIONS = 'RECEIVE_SUBREDDIT_SUBMISSIONS';
-export function receiveSubredditSubmissions(subreddit, order, submissions, nextSubmissionName) {
+function receiveSubredditSubmissions(subreddit, order, submissions, nextSubmissionName) {
     return {
         type: RECEIVE_SUBREDDIT_SUBMISSIONS,
         subreddit,
@@ -21,7 +21,7 @@ export function receiveSubredditSubmissions(subreddit, order, submissions, nextS
 }
 
 export const REQUEST_MORE_SUBREDDIT_SUBMISSIONS = 'REQUEST_MORE_SUBREDDIT_SUBMISSIONS';
-export function requestMoreSubredditSubmissions(subreddit, order) {
+function requestMoreSubredditSubmissions(subreddit, order) {
     return {
         type: REQUEST_MORE_SUBREDDIT_SUBMISSIONS,
         subreddit,
@@ -30,7 +30,7 @@ export function requestMoreSubredditSubmissions(subreddit, order) {
 }
 
 export const RECEIVE_MORE_SUBREDDIT_SUBMISSIONS = 'RECEIVE_MORE_SUBREDDIT_SUBMISSIONS';
-export function receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName) {
+function receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName) {
     return {
         type: RECEIVE_MORE_SUBREDDIT_SUBMISSIONS,
         subreddit,
@@ -68,6 +68,7 @@ export function fetchMoreSubmissions(subreddit, order) {
             .then(listing => {
                 const submissions = listing.data.children.map(c => c.data);
                 const nextSubmissionName = listing.data.after;
+                console.log('listing', listing);
 
                 dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName));
             });

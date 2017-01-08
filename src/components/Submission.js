@@ -4,15 +4,17 @@ import CommentListItem from 'components/CommentListItem';
 
 export default class Submission extends Component {
     static propTypes = {
-        submissionId: PropTypes.string.isRequired,
+        commentIds: PropTypes.array,
+        commentsById: PropTypes.object.isRequired,
+        hasMoreComments: PropTypes.bool.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isLoadingMoreComments: PropTypes.bool.isRequired,
-        submission: PropTypes.object,
-        hasMoreComments: PropTypes.bool.isRequired,
         moreCommentsCount: PropTypes.number,
-        commentsById: PropTypes.object.isRequired,
-        onFetchSubmission: PropTypes.func.isRequired,
+        moreCommentsIds: PropTypes.array,
         onFetchMoreComments: PropTypes.func.isRequired,
+        onFetchSubmission: PropTypes.func.isRequired,
+        submission: PropTypes.object,
+        submissionId: PropTypes.string.isRequired,
     };
 
     componentWillMount() {
@@ -26,28 +28,31 @@ export default class Submission extends Component {
     render() {
         return (
             <div>
-                hi im a submission
+                {this.props.isLoading ? 'loading submission...' : this.props.submission.title}
 
-                {this.props.submission ? this.renderComments() : null}
+                {this.props.commentIds ? this.renderComments() : null}
                 {this.props.hasMoreComments ? this.renderMoreComments() : null}
             </div>
         );
     }
 
     renderComments() {
-        const comments = this.props.submission.comments.map((commentId, i) => {
+        const comments = this.props.commentIds.map((commentId, i) => {
             const comment = this.props.commentsById[commentId];
 
             return <CommentListItem
-                key={i}
                 comment={comment.comment}
-                hasMoreReplies={comment.hasMoreReplies}
-                moreRepliesCount={comment.moreRepliesCount}
-                isLoadingMoreReplies={comment.isLoadingMoreReplies}
-                submissionId={this.props.submissionId}
-                indentLevel={0}
                 commentsById={this.props.commentsById}
+                hasContinueThisThread={comment.hasContinueThisThread}
+                hasMoreReplies={comment.hasMoreReplies}
+                indentLevel={0}
+                isLoadingMoreReplies={comment.isLoadingMoreReplies}
+                key={i}
+                moreRepliesCount={comment.moreRepliesCount}
+                moreRepliesIds={comment.moreRepliesIds}
                 onFetchMoreComments={this.props.onFetchMoreComments}
+                replyIds={comment.replyIds}
+                submissionId={this.props.submissionId}
             />;
         });
 

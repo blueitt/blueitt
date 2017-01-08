@@ -2,71 +2,75 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { fetchSubmission, fetchMoreComments } from 'actions';
+import { fetchSubmission, fetchMoreSubmissionComments } from 'actions/submissions';
 
 import Submission from 'components/Submission';
 
 class SubmissionContainer extends Component {
     static propTypes = {
-        submissionId: PropTypes.string.isRequired,
+        commentIds: PropTypes.array,
+        commentsById: PropTypes.object.isRequired,
+        hasMoreComments: PropTypes.bool.isRequired,
         isLoading: PropTypes.bool.isRequired,
         isLoadingMoreComments: PropTypes.bool.isRequired,
-        submission: PropTypes.object,
-        hasMoreComments: PropTypes.bool.isRequired,
         moreCommentsCount: PropTypes.number,
-        commentsById: PropTypes.object.isRequired,
-        onFetchSubmission: PropTypes.func.isRequired,
+        moreCommentsIds: PropTypes.array,
         onFetchMoreComments: PropTypes.func.isRequired,
+        onFetchSubmission: PropTypes.func.isRequired,
+        submission: PropTypes.object,
+        submissionId: PropTypes.string.isRequired,
     };
 
     render() {
         return <Submission
-            submissionId={this.props.submissionId}
+            commentIds={this.props.commentIds}
+            commentsById={this.props.commentsById}
+            hasMoreComments={this.props.hasMoreComments}
             isLoading={this.props.isLoading}
             isLoadingMoreComments={this.props.isLoadingMoreComments}
-            submission={this.props.submission}
-            hasMoreComments={this.props.hasMoreComments}
             moreCommentsCount={this.props.moreCommentsCount}
-            commentsById={this.props.commentsById}
-            onFetchSubmission={this.props.onFetchSubmission}
             onFetchMoreComments={this.props.onFetchMoreComments}
+            onFetchSubmission={this.props.onFetchSubmission}
+            submission={this.props.submission}
+            submissionId={this.props.submissionId}
         />;
     }
 }
 
 function mapStateToProps(state, props) {
     const submission = state.reddit.submissions[props.params.submissionId];
-    const propsFromRouter = {
+    const commonProps = {
+        commentsById: state.reddit.comments,
         submissionId: props.params.submissionId,
     };
 
     if (submission === undefined) {
         return {
-            ...propsFromRouter,
+            ...commonProps,
+            hasMoreComments: false,
             isLoading: true,
             isLoadingMoreComments: false,
-            submission: null,
-            hasMoreComments: false,
             moreCommentsCount: null,
-            commentsById: state.reddit.comments,
+            submission: null,
         };
     } else {
         return {
-            ...propsFromRouter,
+            ...commonProps,
+            commentIds: submission.commentIds,
+            hasMoreComments: submission.hasMoreComments,
             isLoading: submission.isLoading,
             isLoadingMoreComments: submission.isLoadingMoreComments,
-            submission: submission.submission,
-            hasMoreComments: submission.hasMoreComments,
             moreCommentsCount: submission.moreCommentsCount,
-            commentsById: state.reddit.comments,
-        }
+            moreCommentsIds: submission.moreCommentsIds,
+            submission: submission.submission,
+        };
     }
 }
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
         onFetchSubmission: fetchSubmission,
-        onFetchMoreComments: fetchMoreComments,
+        onFetchMoreComments: fetchMoreSubmissionComments,
     }, dispatch);
 }
 
