@@ -31,6 +31,7 @@ export default class CommentListItem extends Component {
 
                 {this.renderReplies()}
                 {this.props.hasMoreReplies ? this.renderMoreReplies() : null}
+                {this.props.hasContinueThisThread ? this.renderContinueThisThread() : null}
             </div>
         );
     }
@@ -66,6 +67,18 @@ export default class CommentListItem extends Component {
                 Load more replies ({this.props.moreRepliesCount})
 
                 {this.props.isLoadingMoreReplies ? 'loading ...' : 'not loading'}
+            </div>
+        );
+    }
+
+    renderContinueThisThread() {
+        const style = {
+            marginLeft: `${10 * (this.props.indentLevel + 1)}px`,
+        };
+
+        return (
+            <div style={style}>
+                Continue this thread
             </div>
         );
     }

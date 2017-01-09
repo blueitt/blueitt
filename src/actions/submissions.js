@@ -1,5 +1,12 @@
 import * as api from 'api';
 
+import {
+    receiveMoreComments,
+    requestMoreCommentReplies,
+    appendCommentReplies,
+    updateCommentMoreReplies,
+} from 'actions/comments';
+
 export const REQUEST_SUBMISSION = 'REQUEST_SUBMISSION';
 function requestSubmission(submissionId) {
     return {
@@ -40,8 +47,63 @@ export function fetchSubmission(submissionId) {
     }
 }
 
-export function fetchMoreSubmissionComments(submissionId) {
+export const APPEND_SUBMISSION_COMMENTS = 'APPEND_SUBMISSION_COMMENTS';
+function appendSubmissionComments(submissionId, commentIds) {
+    return {
+        type: APPEND_SUBMISSION_COMMENTS,
+        submissionId,
+        commentIds,
+    };
+}
+
+export const UPDATE_SUBMISSION_MORE_COMMENTS = 'UPDATE_SUBMISSION_MORE_COMMENTS';
+function updateSubmissionMoreComments(submissionId,
+        hasMoreComments, moreCommentsCount, moreCommentsIds) {
+    return {
+        type: UPDATE_SUBMISSION_MORE_COMMENTS,
+        submissionId,
+        hasMoreComments,
+        moreCommentsCount,
+        moreCommentsIds,
+    };
+}
+
+export function fetchMoreSubmissionComments(submissionId, fetchRootComments, parentCommentId) {
     return (dispatch, getState) => {
-        dispatch(requestMoreSubmissionComments(submissionId));
+        if (fetchRootComments) {
+            dispatch(requestMoreSubmissionComments(submissionId));
+        } else {
+            dispatch(requestMoreCommentReplies(parentCommentId));
+        }
+
+        const state = getState();
+        const token = state.auth.accessToken;
+        const commentsToExpand = fetchRootComments
+            ? state.reddit.submissions[submissionId].moreCommentsIds
+            : state.reddit.comments[parentCommentId].moreRepliesIds;
+
+        api.getMoreComments(token, submissionId, fetchRootComments, parentCommentId, commentsToExpand)
+            .then(result => {
+                dispatch(receiveMoreComments(result.comments));
+
+                if (fetchRootComments) {
+                    dispatch(appendSubmissionComments(submissionId, result.rootCommentIds));
+                    dispatch(updateSubmissionMoreComments(
+                        submissionId,
+                        result.rootHasMoreComments,
+                        result.rootMoreCommentsCount,
+                        result.rootMoreCommentsIds,
+                    ));
+                } else {
+                    dispatch(appendCommentReplies(parentCommentId, result.rootCommentIds));
+                    dispatch(updateCommentMoreReplies(
+                        parentCommentId,
+                        result.rootHasContinueThisThread,
+                        result.rootHasMoreComments,
+                        result.rootMoreCommentsCount,
+                        result.rootMoreCommentsIds,
+                    ));
+                }
+            });
     }
 }

@@ -4,8 +4,11 @@ import {
 } from 'actions/subreddits';
 
 import {
-    REQUEST_SUBMISSION,
+    APPEND_SUBMISSION_COMMENTS,
     RECEIVE_SUBMISSION,
+    REQUEST_MORE_SUBMISSION_COMMENTS,
+    REQUEST_SUBMISSION,
+    UPDATE_SUBMISSION_MORE_COMMENTS,
 } from 'actions/submissions';
 
 export default function submissions(state = {}, action) {
@@ -24,8 +27,11 @@ export default function submissions(state = {}, action) {
                 state,
                 ...newSubmissions,
             );
-        case REQUEST_SUBMISSION:
+        case APPEND_SUBMISSION_COMMENTS:
         case RECEIVE_SUBMISSION:
+        case REQUEST_MORE_SUBMISSION_COMMENTS:
+        case REQUEST_SUBMISSION:
+        case UPDATE_SUBMISSION_MORE_COMMENTS:
             return {
                 ...state,
                 [action.submissionId]: submission(state[action.submissionId], action),
@@ -47,6 +53,11 @@ const DEFAULT_SUBMISSION_STATE = {
 
 function submission(state = DEFAULT_SUBMISSION_STATE, action) {
     switch (action.type) {
+        case APPEND_SUBMISSION_COMMENTS:
+            return {
+                ...state,
+                commentIds: [...state.commentIds, ...action.commentIds],
+            };
         case REQUEST_SUBMISSION:
             return {
                 ...state,
@@ -61,6 +72,19 @@ function submission(state = DEFAULT_SUBMISSION_STATE, action) {
                 hasMoreComments: action.submission.hasMoreComments,
                 moreCommentsCount: action.submission.moreCommentsCount,
                 moreCommentsIds: action.submission.moreCommentsIds,
+            };
+        case REQUEST_MORE_SUBMISSION_COMMENTS:
+            return {
+                ...state,
+                isLoadingMoreComments: true,
+            };
+        case UPDATE_SUBMISSION_MORE_COMMENTS:
+            return {
+                ...state,
+                isLoadingMoreComments: false,
+                hasMoreComments: action.hasMoreComments,
+                moreCommentsCount: action.moreCommentsCount,
+                moreCommentsIds: action.moreCommentsIds,
             };
         default:
             return state;

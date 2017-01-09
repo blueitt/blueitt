@@ -118,6 +118,9 @@ function flattenCommentsListing(listing) {
     }
 
     const { hasMoreComments, moreCommentsCount, moreCommentsIds } = getMoreCommentsData(lastComment);
+    // if (hasMoreComments) {
+    //     console.log(lastComment);
+    // }
 
     const actualComments = hasMoreComments
         ? allComments.slice(0, -1) // exclude the last "comment"
@@ -153,6 +156,98 @@ function flattenCommentsListing(listing) {
     }
 }
 
+export function getMoreComments(token, submissionId, fetchRootComments, parentCommentId, commentsToExpand) {
+    const reddit = getSnoocore();
+
+    const submissionName = `t3_${submissionId}`;
+
+    return reddit.auth(token)
+        .then(() => {
+            return reddit('/api/morechildren').post({
+                link_id: submissionName,
+                children: commentsToExpand.join(','),
+            });
+        }).then((response) => {
+            const commentObjects = response.json.data.things;
+            const rootParentName = fetchRootComments
+                ? submissionName
+                : `t1_${parentCommentId}`;
+
+            return getNewComments(rootParentName, commentObjects);
+        });
+}
+
+// one comment or submission is gonna have more replies and other changes
+// a bunch of new comments need to be added to the store
+
+function getNewComments(rootParentName, commentObjects) {
+    const comments = commentObjects
+        .filter(c => c.kind === 't1')
+        .map(commentObject => {
+            const { replies, ...commentWithoutReplies } = commentObject.data;
+
+            return {
+                comment: commentWithoutReplies,
+                hasContinueThisThread: false,
+                hasMoreReplies: false,
+                moreRepliesCount: null,
+                moreRepliesIds: null,
+                replyIds: [],
+            };
+        });
+
+    const commentsByName = Object.assign(
+        {},
+        ...comments.map(c => ({ [`t1_${c.comment.id}`]: c })),
+    );
+
+    const rootCommentIds = [];
+    let rootHasContinueThisThread = false;
+    let rootHasMoreComments = false;
+    let rootMoreCommentsCount = null;
+    let rootMoreCommentsIds = null;
+
+    for (const commentObject of commentObjects) {
+        const parentName = commentObject.data.parent_id;
+
+        if (commentObject.kind === 't1') {
+            // an actual comment
+            if (parentName === rootParentName) {
+                rootCommentIds.push(commentObject.data.id);
+            } else {
+                commentsByName[parentName].replyIds.push(commentObject.data.id);
+            }
+        } else if (isContinueThisThread(commentObject)) {
+            // a continue-this-thread comment
+            if (parentName === rootParentName) {
+                rootHasContinueThisThread = true;
+            } else {
+                commentsByName[parentName].hasContinueThisThread = true;
+            }
+        } else {
+            // a load-more-comments comment
+            if (parentName === rootParentName) {
+                rootHasMoreComments = true;
+                rootMoreCommentsCount = commentObject.data.count;
+                rootMoreCommentsIds = commentObject.data.children;
+            } else {
+                commentsByName[parentName].hasMoreComments = true;
+                commentsByName[parentName].moreCommentsCount = commentObject.data.count;
+                commentsByName[parentName].moreCommentsIds = commentObject.data.children;
+            }
+        }
+    }
+
+    return {
+        rootCommentIds,
+        rootHasContinueThisThread,
+        rootHasMoreComments,
+        rootMoreCommentsCount,
+        rootMoreCommentsIds,
+        comments,
+    };
+}
+
 function isContinueThisThread(commentObject) {
     return commentObject.kind === 'more' && commentObject.data.id === '_';
 }
@@ -165,165 +260,3 @@ function getMoreCommentsData(commentObject) {
         moreCommentsIds: isMore ? commentObject.data.children : null,
     };
 }
-
-//             const rootComments = commentsListing.data.children;
-//
-//             const flattenedComments = rootComments.length === 0
-//                 ? {}
-//                 : rootComments.slice(0, -1).map(c => flattenCommentsTree(c.data));
-//
-//             return {
-//                 submission: addSubmissionComments(submission, rootComments),
-//                 commentsById: Object.assign({}, ...flattenedComments),
-//             };
-//
-// function flattenCommentsListing(listing) {
-//     const [hasMore, { moreCommentsCount, moreCommentsIds }] = hasMoreComments(listing);
-//
-//     const actualComments = hasMore
-//         ? listing.data.children
-//         : listing.data.children.slice(0, -1);
-//     const rootCommentIds = actualComments.map(c => c.data.id);
-//
-//     const moreCommentsCount = hasMore
-//         ?
-//
-//     return {
-//         comments,
-//         rootCommentIds,
-//         isContinueThisThread,
-//         hasMore,
-//         moreCommentsCount,
-//         moreCommentsIds,
-//     }
-// }
-//
-// function hasMoreComments(listing) {
-//     const comments = listing.data.children;
-//     const lastComment = comments[comments.length - 1];
-//
-// }
-//
-// function hasMore(comments) {
-//
-//     return lastComment.type === 'more';
-// }
-//
-// function addSubmissionComments(submission, rootComments) {
-//     if (rootComments.length === 0) {
-//         // There are no comments on this submission
-//         return {
-//             submission,
-//             commentIds: [],
-//             hasMoreComments: false,
-//             moreCommentsIds: null,
-//             moreCommentsCount: null,
-//         };
-//     }
-//
-//     const lastComment = rootComments[rootComments.length - 1];
-//     if (lastComment.kind === 't1') {
-//         // There is no "more comments" to be loaded
-//         return {
-//             submission,
-//             commentIds: rootComments.map(c => c.data.id),
-//             hasMoreComments: false,
-//             moreCommentsIds: null,
-//             moreCommentsCount: null,
-//         };
-//     }
-//
-//     return {
-//         submission,
-//         commentIds: rootComments.slice(0, -1).map(c => c.data.id),
-//         hasMoreComments: true,
-//         moreCommentsIds: lastComment.data.children,
-//         moreCommentsCount: lastComment.data.count,
-//     };
-// }
-//
-// function flattenSubmissionComments(rootComments) {
-//     if (rootComments.length === 0) {
-//         return [];
-//     }
-//
-//     const actualComments =
-//
-//     if (hasLoadMoreComments(rootComments)) {
-//
-//     }
-// }
-//
-// function flattenCommentsTree(comment) {
-//     const commentWithMetadata = addCommentMetadata(comment);
-//
-//     if (!hasAnyReplies(comment)) {
-//         return [commentWithMetadata];
-//     }
-//
-//     const replies = getActualReplies(comment).map(c => flattenCommentsTree(c));
-//     return [commentWithMetadata, ...replies];
-// }
-//
-// function addCommentMetadata(comment) {
-//     const { replies: repliesListing, ...withoutReplies } = comment;
-//
-//     if (!hasAnyReplies(comment)) {
-//         return {
-//             comment: withoutReplies,
-//             replyIds: [],
-//             hasMoreReplies: false,
-//             hasContinueThisThread: false,
-//             moreRepliesIds: null,
-//             moreRepliesCount: null,
-//         };
-//     }
-//
-//     const replies = repliesListing.data.children;
-//     if (!hasLoadMoreComments(comment)) {
-//         return {
-//             comment: withoutReplies,
-//             replyIds: replies.map(c => c.data.id),
-//             hasMoreReplies: false,
-//             hasContinueThisThread: hasContinueThisThread(comment),
-//             moreRepliesIds: null,
-//             moreRepliesCount: null,
-//         };
-//     }
-//
-//     const lastReply = replies[replies.length - 1];
-//     return {
-//         comment: withoutReplies,
-//         replyIds: replies.slice(0, -1).map(c => c.data.id),
-//         hasMoreReplies: true,
-//         hasContinueThisThread: hasContinueThisThread(comment),
-//         moreRepliesIds: lastReply.data.children,
-//         moreCommentsCount: lastReply.data.count,
-//     };
-// }
-//
-// function hasAnyReplies(comment) {
-//     return comment.replies !== "";
-// }
-//
-// function getActualReplies(comment) {
-//     const replies = comment.replies.data.children;
-//     return hasLoadMoreComments(comment) ? replies.slice(0, -1) : replies;
-// }
-//
-// function hasLoadMoreComments(comment) {
-//     const replies = comment.replies.data.children;
-//     const lastReply = replies[replies.length - 1];
-//
-//     return lastReply.kind === 'more';
-// }
-//
-// function hasContinueThisThread(comment) {
-//     const replies = comment.replies.data.children;
-//     if (replies.length !== 1) {
-//         return false;
-//     }
-//
-//     const reply = replies[0];
-//     return reply.kind === 'more' && reply.data.id === '_';
-// }
