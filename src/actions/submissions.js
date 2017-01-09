@@ -16,12 +16,11 @@ function requestSubmission(submissionId) {
 }
 
 export const RECEIVE_SUBMISSION = 'RECEIVE_SUBMISSION';
-function receiveSubmission(submissionId, submission, comments) {
+function receiveSubmission(submissionId, submission) {
     return {
         type: RECEIVE_SUBMISSION,
         submissionId,
         submission,
-        comments,
     };
 }
 
@@ -42,7 +41,8 @@ export function fetchSubmission(submissionId) {
 
         api.getSubmission(token, submissionId)
             .then(({ submission, comments }) => {
-                dispatch(receiveSubmission(submissionId, submission, comments));
+                dispatch(receiveMoreComments(comments));
+                dispatch(receiveSubmission(submissionId, submission));
             });
     }
 }

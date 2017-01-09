@@ -1,8 +1,4 @@
 import {
-    RECEIVE_SUBMISSION,
-} from 'actions/submissions';
-
-import {
     RECEIVE_MORE_COMMENTS,
     REQUEST_MORE_COMMENT_REPLIES,
     APPEND_COMMENT_REPLIES,
@@ -11,19 +7,6 @@ import {
 
 export default function comments(state = {}, action) {
     switch (action.type) {
-        case RECEIVE_SUBMISSION:
-            const newComments = action.comments.map(comment => ({
-                [comment.comment.id]: {
-                    ...DEFAULT_COMMENT_STATE,
-                    ...comment,
-                },
-            }));
-
-            return Object.assign(
-                {},
-                state,
-                ...newComments,
-            );
         case RECEIVE_MORE_COMMENTS:
             const commentsById = action.comments.map(comment => ({
                 [comment.comment.id]: {

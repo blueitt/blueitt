@@ -56,109 +56,41 @@ export function getSubmission(token, submissionId) {
         .then(() => {
             return reddit(`/comments/${submissionId}`).get({ raw_json: 1 });
         }).then(([submissionListing, commentsListing]) => {
-            const rawSubmission = submissionListing.data.children[0].data;
+            const submission = submissionListing.data.children[0].data;
+            const commentObjects = flattenCommentsTree(commentsListing);
+            console.log(commentObjects);
 
-            return flattenSubmissionComments(rawSubmission, commentsListing);
+            const result = getNewComments(`t3_${submission.id}`, commentObjects);
+
+            return {
+                submission: {
+                    submission,
+                    commentIds: result.rootCommentIds,
+                    hasMoreComments: result.rootHasMoreComments,
+                    moreCommentsCount: result.rootMoreCommentsCount,
+                    moreCommentsIds: result.rootMoreCommentsIds,
+                },
+                comments: result.comments,
+            };
         });
 }
 
-function flattenSubmissionComments(submission, commentsListing) {
-    const flattenedComments = flattenCommentsListing(commentsListing);
+function flattenCommentsTree(commentsListing) {
+    let result = [];
 
-    return {
-        submission: {
-            commentIds: flattenedComments.rootCommentIds,
-            hasMoreComments: flattenedComments.hasMoreComments,
-            moreCommentsCount: flattenedComments.moreCommentsCount,
-            moreCommentsIds: flattenedComments.moreCommentsIds,
-            submission,
-        },
-        comments: flattenedComments.comments,
-    };
-}
+    for (const commentObject of commentsListing.data.children) {
+        result = [...result, commentObject];
 
-function flattenCommentsListing(listing) {
-    if (listing === '') {
-        // comments without any replies have empty string as their replies
-        return {
-            comments: [],
-            hasMoreComments: false,
-            isContinueThisThread: false,
-            moreCommentsCount: null,
-            moreCommentsIds: null,
-            rootCommentIds: [],
-        };
+        if (commentObject.kind === 't1' && commentObject.data.replies !== '') {
+            result = [...result, ...flattenCommentsTree(commentObject.data.replies)];
+        }
     }
 
-    const allComments = listing.data.children;
-    if (allComments.length === 0) {
-        // listing may have zero children (a submission with no comments)
-        return {
-            comments: [],
-            hasMoreComments: false,
-            isContinueThisThread: false,
-            moreCommentsCount: null,
-            moreCommentsIds: null,
-            rootCommentIds: [],
-        };
-    }
-
-    const lastComment = allComments[allComments.length - 1];
-    if (isContinueThisThread(lastComment)) {
-        // this listing must be of length one, and the only "comment" is a link
-        // to "continue this thread" because the reply chain got too deep
-        return {
-            comments: [],
-            hasMoreComments: false,
-            isContinueThisThread: true,
-            moreCommentsCount: null,
-            moreCommentsIds: null,
-            rootCommentIds: [],
-        };
-    }
-
-    const { hasMoreComments, moreCommentsCount, moreCommentsIds } = getMoreCommentsData(lastComment);
-    // if (hasMoreComments) {
-    //     console.log(lastComment);
-    // }
-
-    const actualComments = hasMoreComments
-        ? allComments.slice(0, -1) // exclude the last "comment"
-        : allComments;
-
-    const rootCommentIds = actualComments.map(c => c.data.id);
-
-    let comments = [];
-    for (const commentObject of actualComments) {
-        const comment = commentObject.data;
-        const { replies, ...commentWithoutReplies } = comment;
-        const flattenedReplies = flattenCommentsListing(replies);
-
-        const commentWithMetadata = {
-            comment: commentWithoutReplies,
-            hasContinueThisThread: flattenedReplies.isContinueThisThread,
-            hasMoreReplies: flattenedReplies.hasMoreComments,
-            moreRepliesCount: flattenedReplies.moreCommentsCount,
-            moreRepliesIds: flattenedReplies.moreCommentsIds,
-            replyIds: flattenedReplies.rootCommentIds,
-        };
-
-        comments = [...comments, commentWithMetadata, ...flattenedReplies.comments];
-    }
-
-    return {
-        comments,
-        hasMoreComments,
-        isContinueThisThread: false,
-        moreCommentsCount,
-        moreCommentsIds,
-        rootCommentIds,
-    }
+    return result;
 }
 
 export function getMoreComments(token, submissionId, fetchRootComments, parentCommentId, commentsToExpand) {
     const reddit = getSnoocore();
-
     const submissionName = `t3_${submissionId}`;
 
     return reddit.auth(token)
@@ -176,9 +108,6 @@ export function getMoreComments(token, submissionId, fetchRootComments, parentCo
             return getNewComments(rootParentName, commentObjects);
         });
 }
-
-// one comment or submission is gonna have more replies and other changes
-// a bunch of new comments need to be added to the store
 
 function getNewComments(rootParentName, commentObjects) {
     const comments = commentObjects
@@ -231,9 +160,9 @@ function getNewComments(rootParentName, commentObjects) {
                 rootMoreCommentsCount = commentObject.data.count;
                 rootMoreCommentsIds = commentObject.data.children;
             } else {
-                commentsByName[parentName].hasMoreComments = true;
-                commentsByName[parentName].moreCommentsCount = commentObject.data.count;
-                commentsByName[parentName].moreCommentsIds = commentObject.data.children;
+                commentsByName[parentName].hasMoreReplies = true;
+                commentsByName[parentName].moreRepliesCount = commentObject.data.count;
+                commentsByName[parentName].moreRepliesIds = commentObject.data.children;
             }
         }
     }
