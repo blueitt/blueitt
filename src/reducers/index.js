@@ -15,5 +15,5 @@ const reddit = combineReducers({
 export default combineReducers({
     auth,
     reddit,
-    routing: routerReducer
+    routing: routerReducer,
 });

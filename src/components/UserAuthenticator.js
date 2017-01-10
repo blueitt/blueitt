@@ -11,9 +11,6 @@ export default class UserAuthenticator extends Component {
         onSaveAccessToken: PropTypes.func.isRequired,
     };
 
-    getUnauthedReddit() {
-    }
-
     componentWillMount() {
         const hashParams = window.location.hash.split(/(#|=|&)/);
         if (hashParams.indexOf('access_token') === -1) {
@@ -26,6 +23,7 @@ export default class UserAuthenticator extends Component {
         if (authState === this.props.savedAuthState) {
             this.props.onSaveAccessToken(accessToken);
         } else {
+            // eslint-disable-next-line no-console
             console.error('authState is not correct, possible CSRF?');
         }
     }
@@ -40,14 +38,13 @@ export default class UserAuthenticator extends Component {
     render() {
         const authState = uuid.v4();
         const authUrl = getAuthUrl(authState);
+        const onClick = (e => this.saveAuthState(e, authState, authUrl));
 
         return (
             <div>
                 <h3>Time to authenticate</h3>
 
-                <a
-                    href={authUrl}
-                    onClick={(e) => this.saveAuthState(e, authState, authUrl)}>
+                <a href={authUrl} onClick={onClick}>
                     Go to reddit
                 </a>
             </div>

@@ -7,17 +7,17 @@ const DEFAULT_AUTH_STATE = {
 
 export default function auth(state = DEFAULT_AUTH_STATE, action) {
     switch (action.type) {
-        case SAVE_AUTH_STATE:
-            return {
-                ...state,
-                state: action.authState,
-            };
-        case SAVE_ACCESS_TOKEN:
-            return {
-                ...state,
-                accessToken: action.accessToken,
-            };
-        default:
-            return state;
+    case SAVE_AUTH_STATE:
+        return {
+            ...state,
+            state: action.authState,
+        };
+    case SAVE_ACCESS_TOKEN:
+        return {
+            ...state,
+            accessToken: action.accessToken,
+        };
+    default:
+        return state;
     }
 }

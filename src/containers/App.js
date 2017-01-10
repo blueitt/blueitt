@@ -1,8 +1,12 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 
 import 'styles/vendor/foundation.css';
 
 export default class App extends Component {
+    static propTypes = {
+        children: PropTypes.element.isRequired,
+    };
+
     render() {
         return (
             <div>

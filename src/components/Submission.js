@@ -10,7 +10,6 @@ export default class Submission extends Component {
         isLoading: PropTypes.bool.isRequired,
         isLoadingMoreComments: PropTypes.bool.isRequired,
         moreCommentsCount: PropTypes.number,
-        moreCommentsIds: PropTypes.array,
         onFetchMoreComments: PropTypes.func.isRequired,
         onFetchSubmission: PropTypes.func.isRequired,
         submission: PropTypes.object,
@@ -37,26 +36,27 @@ export default class Submission extends Component {
     }
 
     renderComments() {
-        const comments = this.props.commentIds.map((commentId, i) => {
+        const comments = this.props.commentIds.map((commentId) => {
             const comment = this.props.commentsById[commentId];
 
-            return <CommentListItem
-                comment={comment.comment}
-                commentsById={this.props.commentsById}
-                hasContinueThisThread={comment.hasContinueThisThread}
-                hasMoreReplies={comment.hasMoreReplies}
-                indentLevel={0}
-                isLoadingMoreReplies={comment.isLoadingMoreReplies}
-                key={i}
-                moreRepliesCount={comment.moreRepliesCount}
-                moreRepliesIds={comment.moreRepliesIds}
-                onFetchMoreComments={this.props.onFetchMoreComments}
-                replyIds={comment.replyIds}
-                submissionId={this.props.submissionId}
-            />;
+            return (
+                <CommentListItem
+                    comment={comment.comment}
+                    commentsById={this.props.commentsById}
+                    hasContinueThisThread={comment.hasContinueThisThread}
+                    hasMoreReplies={comment.hasMoreReplies}
+                    indentLevel={0}
+                    isLoadingMoreReplies={comment.isLoadingMoreReplies}
+                    key={commentId}
+                    moreRepliesCount={comment.moreRepliesCount}
+                    onFetchMoreComments={this.props.onFetchMoreComments}
+                    replyIds={comment.replyIds}
+                    submissionId={this.props.submissionId}
+                />
+            );
         });
 
-        return <div>{comments}</div>
+        return <div>{comments}</div>;
     }
 
     renderMoreComments() {
@@ -65,13 +65,13 @@ export default class Submission extends Component {
                 <div>
                     loading more comments...
                 </div>
-            )
-        } else {
-            return (
-                <div onClick={() => this.fetchMoreComments()}>
-                    load more comments ({this.props.moreCommentsCount})
-                </div>
             );
         }
+
+        return (
+            <button onClick={() => this.fetchMoreComments()}>
+                load more comments ({this.props.moreCommentsCount})
+            </button>
+        );
     }
 }

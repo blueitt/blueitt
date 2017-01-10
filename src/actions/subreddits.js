@@ -47,7 +47,7 @@ export function fetchSubreddit(subreddit, order) {
         const token = getState().auth.accessToken;
 
         api.getSubredditSubmissions(token, subreddit, order)
-            .then(listing => {
+            .then((listing) => {
                 const submissions = listing.data.children.map(c => c.data);
                 const nextSubmissionName = listing.data.after;
 
@@ -62,15 +62,15 @@ export function fetchMoreSubmissions(subreddit, order) {
 
         const state = getState();
         const token = state.auth.accessToken;
-        const nextSubmissionName = state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
+        const nextSubmissionName =
+            state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
 
         api.getSubredditSubmissions(token, subreddit, order, nextSubmissionName)
-            .then(listing => {
+            .then((listing) => {
                 const submissions = listing.data.children.map(c => c.data);
-                const nextSubmissionName = listing.data.after;
-                console.log('listing', listing);
+                const newNextSubmission = listing.data.after;
 
-                dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, nextSubmissionName));
+                dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, newNextSubmission));
             });
-    }
+    };
 }

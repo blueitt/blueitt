@@ -19,16 +19,18 @@ class SubredditContainer extends Component {
     };
 
     render() {
-        return <Subreddit
-            subredditName={this.props.subredditName}
-            subredditOrder={this.props.subredditOrder}
-            isLoadingFirst={this.props.isLoadingFirst}
-            isLoadingMore={this.props.isLoadingMore}
-            onFetchSubreddit={this.props.onFetchSubreddit}
-            onFetchMoreSubmissions={this.props.onFetchMoreSubmissions}
-            submissionIds={this.props.submissionIds}
-            submissionsById={this.props.submissionsById}
-        />;
+        return (
+            <Subreddit
+                subredditName={this.props.subredditName}
+                subredditOrder={this.props.subredditOrder}
+                isLoadingFirst={this.props.isLoadingFirst}
+                isLoadingMore={this.props.isLoadingMore}
+                onFetchSubreddit={this.props.onFetchSubreddit}
+                onFetchMoreSubmissions={this.props.onFetchMoreSubmissions}
+                submissionIds={this.props.submissionIds}
+                submissionsById={this.props.submissionsById}
+            />
+        );
     }
 }
 
@@ -47,16 +49,16 @@ function mapStateToProps(state, props) {
             isLoadingMore: false,
             submissionIds: null,
         };
-    } else {
-        const subredditSubmissions = subreddit.submissions[props.route.order];
-
-        return {
-            ...commonProps,
-            isLoadingFirst: subredditSubmissions.isLoadingFirst,
-            isLoadingMore: subredditSubmissions.isLoadingMore,
-            submissionIds: subredditSubmissions.submissionIds,
-        };
     }
+
+    const subredditSubmissions = subreddit.submissions[props.route.order];
+
+    return {
+        ...commonProps,
+        isLoadingFirst: subredditSubmissions.isLoadingFirst,
+        isLoadingMore: subredditSubmissions.isLoadingMore,
+        submissionIds: subredditSubmissions.submissionIds,
+    };
 }
 
 function mapDispatchToProps(dispatch) {

@@ -36,17 +36,17 @@ export default class Subreddit extends Component {
                     {this.props.isLoadingMore ? 'loading more ...' : 'not loading more.'}
                 </div>
 
-                <div onClick={() => this.fetchMoreSubmissions()}>
+                <button onClick={() => this.fetchMoreSubmissions()}>
                     Click more to load more!
-                </div>
+                </button>
             </span>
         );
     }
 
     renderSubmissions() {
-        const submissions = this.props.submissionIds.map((submissionId, i) => {
+        const submissions = this.props.submissionIds.map((submissionId) => {
             const submission = this.props.submissionsById[submissionId].submission;
-            return <SubmissionListItem key={i} submission={submission} />;
+            return <SubmissionListItem key={submissionId} submission={submission} />;
         });
 
         return (

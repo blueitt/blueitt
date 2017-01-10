@@ -58,7 +58,6 @@ export function getSubmission(token, submissionId) {
         }).then(([submissionListing, commentsListing]) => {
             const submission = submissionListing.data.children[0].data;
             const commentObjects = flattenCommentsTree(commentsListing);
-            console.log(commentObjects);
 
             const result = getNewComments(`t3_${submission.id}`, commentObjects);
 
@@ -78,13 +77,13 @@ export function getSubmission(token, submissionId) {
 function flattenCommentsTree(commentsListing) {
     let result = [];
 
-    for (const commentObject of commentsListing.data.children) {
+    commentsListing.data.children.forEach((commentObject) => {
         result = [...result, commentObject];
 
         if (commentObject.kind === 't1' && commentObject.data.replies !== '') {
             result = [...result, ...flattenCommentsTree(commentObject.data.replies)];
         }
-    }
+    });
 
     return result;
 }
@@ -112,7 +111,8 @@ export function getMoreComments(token, submissionId, fetchRootComments, parentCo
 function getNewComments(rootParentName, commentObjects) {
     const comments = commentObjects
         .filter(c => c.kind === 't1')
-        .map(commentObject => {
+        .map((commentObject) => {
+            // eslint-disable-next-line no-unused-vars
             const { replies, ...commentWithoutReplies } = commentObject.data;
 
             return {
@@ -136,7 +136,7 @@ function getNewComments(rootParentName, commentObjects) {
     let rootMoreCommentsCount = null;
     let rootMoreCommentsIds = null;
 
-    for (const commentObject of commentObjects) {
+    commentObjects.forEach((commentObject) => {
         const parentName = commentObject.data.parent_id;
 
         if (commentObject.kind === 't1') {
@@ -155,6 +155,7 @@ function getNewComments(rootParentName, commentObjects) {
             }
         } else {
             // a load-more-comments comment
+            // eslint-disable-next-line no-lonely-if
             if (parentName === rootParentName) {
                 rootHasMoreComments = true;
                 rootMoreCommentsCount = commentObject.data.count;
@@ -165,7 +166,7 @@ function getNewComments(rootParentName, commentObjects) {
                 commentsByName[parentName].moreRepliesIds = commentObject.data.children;
             }
         }
-    }
+    });
 
     return {
         rootCommentIds,
@@ -179,13 +180,4 @@ function getNewComments(rootParentName, commentObjects) {
 
 function isContinueThisThread(commentObject) {
     return commentObject.kind === 'more' && commentObject.data.id === '_';
-}
-
-function getMoreCommentsData(commentObject) {
-    const isMore = commentObject.kind === 'more';
-    return {
-        hasMoreComments: isMore,
-        moreCommentsCount: isMore ? commentObject.data.count : null,
-        moreCommentsIds: isMore ? commentObject.data.children : null,
-    };
 }

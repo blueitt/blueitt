@@ -14,7 +14,6 @@ class SubmissionContainer extends Component {
         isLoading: PropTypes.bool.isRequired,
         isLoadingMoreComments: PropTypes.bool.isRequired,
         moreCommentsCount: PropTypes.number,
-        moreCommentsIds: PropTypes.array,
         onFetchMoreComments: PropTypes.func.isRequired,
         onFetchSubmission: PropTypes.func.isRequired,
         submission: PropTypes.object,
@@ -22,18 +21,20 @@ class SubmissionContainer extends Component {
     };
 
     render() {
-        return <Submission
-            commentIds={this.props.commentIds}
-            commentsById={this.props.commentsById}
-            hasMoreComments={this.props.hasMoreComments}
-            isLoading={this.props.isLoading}
-            isLoadingMoreComments={this.props.isLoadingMoreComments}
-            moreCommentsCount={this.props.moreCommentsCount}
-            onFetchMoreComments={this.props.onFetchMoreComments}
-            onFetchSubmission={this.props.onFetchSubmission}
-            submission={this.props.submission}
-            submissionId={this.props.submissionId}
-        />;
+        return (
+            <Submission
+                commentIds={this.props.commentIds}
+                commentsById={this.props.commentsById}
+                hasMoreComments={this.props.hasMoreComments}
+                isLoading={this.props.isLoading}
+                isLoadingMoreComments={this.props.isLoadingMoreComments}
+                moreCommentsCount={this.props.moreCommentsCount}
+                onFetchMoreComments={this.props.onFetchMoreComments}
+                onFetchSubmission={this.props.onFetchSubmission}
+                submission={this.props.submission}
+                submissionId={this.props.submissionId}
+            />
+        );
     }
 }
 
@@ -53,18 +54,17 @@ function mapStateToProps(state, props) {
             moreCommentsCount: null,
             submission: null,
         };
-    } else {
-        return {
-            ...commonProps,
-            commentIds: submission.commentIds,
-            hasMoreComments: submission.hasMoreComments,
-            isLoading: submission.isLoading,
-            isLoadingMoreComments: submission.isLoadingMoreComments,
-            moreCommentsCount: submission.moreCommentsCount,
-            moreCommentsIds: submission.moreCommentsIds,
-            submission: submission.submission,
-        };
     }
+
+    return {
+        ...commonProps,
+        commentIds: submission.commentIds,
+        hasMoreComments: submission.hasMoreComments,
+        isLoading: submission.isLoading,
+        isLoadingMoreComments: submission.isLoadingMoreComments,
+        moreCommentsCount: submission.moreCommentsCount,
+        submission: submission.submission,
+    };
 }
 
 function mapDispatchToProps(dispatch) {

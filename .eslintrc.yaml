@@ -1,0 +1,31 @@
+---
+parser: babel-eslint
+parserOptions:
+    allowImportExportEverywhere: true
+env:
+    browser: true
+extends:
+    - airbnb
+settings:
+    import/resolver: webpack
+rules:
+    arrow-body-style: off
+    comma-dangle:
+        - error
+        -
+            arrays: always-multiline
+            objects: always-multiline
+            imports: always-multiline
+            exports: always-multiline
+            functions: ignore
+    indent: [error, 4]
+    react/forbid-prop-types: off
+    react/jsx-indent: [error, 4]
+    react/sort-comp: off
+    react/jsx-indent-props: [error, 4]
+    react/jsx-filename-extension: off
+    react/prefer-stateless-function: off
+    react/require-default-props: off
+    max-len: off
+    no-case-declarations: off
+    no-use-before-define: off

@@ -14,11 +14,13 @@ class UserAuthenticatorContainer extends Component {
     };
 
     render() {
-        return <UserAuthenticator
-            savedAuthState={this.props.savedAuthState}
-            onSaveAuthState={this.props.onSaveAuthState}
-            onSaveAccessToken={this.props.onSaveAccessToken}
-        />;
+        return (
+            <UserAuthenticator
+                savedAuthState={this.props.savedAuthState}
+                onSaveAuthState={this.props.onSaveAuthState}
+                onSaveAccessToken={this.props.onSaveAccessToken}
+            />
+        );
     }
 }
 

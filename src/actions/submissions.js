@@ -44,7 +44,7 @@ export function fetchSubmission(submissionId) {
                 dispatch(receiveMoreComments(comments));
                 dispatch(receiveSubmission(submissionId, submission));
             });
-    }
+    };
 }
 
 export const APPEND_SUBMISSION_COMMENTS = 'APPEND_SUBMISSION_COMMENTS';
@@ -78,12 +78,12 @@ export function fetchMoreSubmissionComments(submissionId, fetchRootComments, par
 
         const state = getState();
         const token = state.auth.accessToken;
-        const commentsToExpand = fetchRootComments
+        const moreComments = fetchRootComments
             ? state.reddit.submissions[submissionId].moreCommentsIds
             : state.reddit.comments[parentCommentId].moreRepliesIds;
 
-        api.getMoreComments(token, submissionId, fetchRootComments, parentCommentId, commentsToExpand)
-            .then(result => {
+        api.getMoreComments(token, submissionId, fetchRootComments, parentCommentId, moreComments)
+            .then((result) => {
                 dispatch(receiveMoreComments(result.comments));
 
                 if (fetchRootComments) {
@@ -92,7 +92,7 @@ export function fetchMoreSubmissionComments(submissionId, fetchRootComments, par
                         submissionId,
                         result.rootHasMoreComments,
                         result.rootMoreCommentsCount,
-                        result.rootMoreCommentsIds,
+                        result.rootMoreCommentsIds
                     ));
                 } else {
                     dispatch(appendCommentReplies(parentCommentId, result.rootCommentIds));
@@ -101,9 +101,9 @@ export function fetchMoreSubmissionComments(submissionId, fetchRootComments, par
                         result.rootHasContinueThisThread,
                         result.rootHasMoreComments,
                         result.rootMoreCommentsCount,
-                        result.rootMoreCommentsIds,
+                        result.rootMoreCommentsIds
                     ));
                 }
             });
-    }
+    };
 }
