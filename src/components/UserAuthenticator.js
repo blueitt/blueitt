@@ -28,11 +28,6 @@ export default class UserAuthenticator extends Component {
                 this.props.onSaveRefreshToken(refreshToken);
                 this.props.onSaveAccessToken(reddit.getAccessToken());
             });
-
-            // TODO untested
-            reddit.on('access_token_refreshed', (accessToken) => {
-                this.props.onSaveAccessToken(accessToken);
-            });
         } else {
             // eslint-disable-next-line no-console
             console.error('authState is not correct, possible CSRF?');

@@ -20,11 +20,12 @@ export function getAuthUrl(authState) {
     return getUnauthedReddit().getAuthUrl(authState);
 }
 
-export function getAuthedReddit(accessToken, refreshToken) {
+export function getAuthedReddit(accessToken, refreshToken, onSaveAccessToken) {
     const reddit = getUnauthedReddit();
 
     reddit.setAccessToken(accessToken);
     reddit.setRefreshToken(refreshToken);
+    reddit.on('access_token_refreshed', onSaveAccessToken);
 
     return reddit;
 }

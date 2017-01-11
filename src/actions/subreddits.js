@@ -46,7 +46,7 @@ export function fetchSubreddit(subreddit, order) {
         dispatch(requestSubreddit(subreddit, order));
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state);
+        const reddit = getAuthedRedditFromState(state, dispatch);
 
         getSubredditSubmissions(reddit, subreddit, order)
             .then(({ submissions, nextSubmissionName }) => {
@@ -60,7 +60,7 @@ export function fetchMoreSubmissions(subreddit, order) {
         dispatch(requestMoreSubredditSubmissions(subreddit, order));
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state);
+        const reddit = getAuthedRedditFromState(state, dispatch);
         const nextSubmissionName =
             state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
 
