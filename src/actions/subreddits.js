@@ -1,4 +1,5 @@
-import * as api from 'api';
+import { getAuthedRedditFromState } from 'actions/util';
+import { getSubredditSubmissions } from 'api/subreddits';
 
 export const REQUEST_SUBREDDIT = 'REQUEST_SUBREDDIT';
 function requestSubreddit(subreddit, order) {
@@ -44,13 +45,11 @@ export function fetchSubreddit(subreddit, order) {
     return (dispatch, getState) => {
         dispatch(requestSubreddit(subreddit, order));
 
-        const token = getState().auth.accessToken;
+        const state = getState();
+        const reddit = getAuthedRedditFromState(state);
 
-        api.getSubredditSubmissions(token, subreddit, order)
-            .then((listing) => {
-                const submissions = listing.data.children.map(c => c.data);
-                const nextSubmissionName = listing.data.after;
-
+        getSubredditSubmissions(reddit, subreddit, order)
+            .then(({ submissions, nextSubmissionName }) => {
                 dispatch(receiveSubredditSubmissions(subreddit, order, submissions, nextSubmissionName));
             });
     };
@@ -61,15 +60,12 @@ export function fetchMoreSubmissions(subreddit, order) {
         dispatch(requestMoreSubredditSubmissions(subreddit, order));
 
         const state = getState();
-        const token = state.auth.accessToken;
+        const reddit = getAuthedRedditFromState(state);
         const nextSubmissionName =
             state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
 
-        api.getSubredditSubmissions(token, subreddit, order, nextSubmissionName)
-            .then((listing) => {
-                const submissions = listing.data.children.map(c => c.data);
-                const newNextSubmission = listing.data.after;
-
+        getSubredditSubmissions(reddit, subreddit, order, nextSubmissionName)
+            .then(({ submissions, nextSubmissionName: newNextSubmission }) => {
                 dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, newNextSubmission));
             });
     };

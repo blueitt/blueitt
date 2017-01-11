@@ -2,26 +2,37 @@ import React, { Component, PropTypes } from 'react';
 
 import uuid from 'uuid';
 
-import { getAuthUrl } from 'api';
+import { getAuthUrl, getSnoocore } from 'api/util';
 
 export default class UserAuthenticator extends Component {
     static propTypes = {
         savedAuthState: PropTypes.string,
-        onSaveAuthState: PropTypes.func.isRequired,
         onSaveAccessToken: PropTypes.func.isRequired,
+        onSaveAuthState: PropTypes.func.isRequired,
+        onSaveRefreshToken: PropTypes.func.isRequired,
     };
 
     componentWillMount() {
-        const hashParams = window.location.hash.split(/(#|=|&)/);
-        if (hashParams.indexOf('access_token') === -1) {
+        const urlParams = window.location.search.split(/(\?|=|&)/);
+        if (urlParams.indexOf('code') === -1) {
             return;
         }
 
-        const accessToken = hashParams[hashParams.indexOf('access_token') + 2];
-        const authState = hashParams[hashParams.indexOf('state') + 2];
+        const authCode = urlParams[urlParams.indexOf('code') + 2];
+        const authState = urlParams[urlParams.indexOf('state') + 2];
 
         if (authState === this.props.savedAuthState) {
-            this.props.onSaveAccessToken(accessToken);
+            const reddit = getSnoocore();
+
+            reddit.auth(authCode).then((refreshToken) => {
+                this.props.onSaveRefreshToken(refreshToken);
+                this.props.onSaveAccessToken(reddit.getAccessToken());
+            });
+
+            // TODO untested
+            reddit.on('access_token_refreshed', (accessToken) => {
+                this.props.onSaveAccessToken(accessToken);
+            });
         } else {
             // eslint-disable-next-line no-console
             console.error('authState is not correct, possible CSRF?');

@@ -13,3 +13,11 @@ export function saveAccessToken(accessToken) {
         accessToken,
     };
 }
+
+export const SAVE_REFRESH_TOKEN = 'SAVE_REFRESH_TOKEN';
+export function saveRefreshToken(refreshToken) {
+    return {
+        type: SAVE_REFRESH_TOKEN,
+        refreshToken,
+    };
+}
