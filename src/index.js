@@ -13,6 +13,8 @@ import SubmissionContainer from 'containers/SubmissionContainer';
 import SubredditContainer from 'containers/SubredditContainer';
 import UserAuthenticatorContainer from 'containers/UserAuthenticatorContainer';
 
+import 'bootstrap/scss/bootstrap.scss';
+
 const store = configureStore();
 
 const history = syncHistoryWithStore(browserHistory, store);

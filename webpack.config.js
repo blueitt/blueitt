@@ -1,6 +1,10 @@
 const path = require('path');
 const webpack = require('webpack');
 
+const distPath = path.join(__dirname, 'dist');
+const srcPath = path.join(__dirname, 'src');
+const nodeModulesPath = path.join(__dirname, 'node_modules');
+
 module.exports = {
     devtool: 'cheap-module-source-map',
     entry: [
@@ -8,7 +12,7 @@ module.exports = {
         './src/index',
     ],
     output: {
-        path: path.join(__dirname, 'dist'),
+        path: distPath,
         filename: 'bundle.js',
         publicPath: '/static/',
     },
@@ -22,14 +26,14 @@ module.exports = {
             {
                 test: /\.js$/,
                 loaders: ['react-hot', 'babel'],
-                include: path.join(__dirname, 'src'),
+                include: [srcPath],
             },
             {
-                test: /\.css$/,
-                loaders: ['style', 'css'],
-                include: path.join(__dirname, 'src'),
+                test: /\.scss$/,
+                loaders: ['style', 'css', 'postcss', 'sass'],
+                include: [srcPath, nodeModulesPath],
             },
-        ]
+        ],
     },
     resolve: {
         root: [path.join(__dirname, 'src')],
