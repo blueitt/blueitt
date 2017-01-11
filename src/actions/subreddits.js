@@ -1,5 +1,6 @@
 import { getAuthedRedditFromState } from 'actions/util';
-import { getSubredditSubmissions } from 'api/subreddits';
+import { getFrontPageSubmissions, getSubredditSubmissions } from 'api/subreddits';
+import FRONT_PAGE from 'constants/frontPage';
 
 export const REQUEST_SUBREDDIT = 'REQUEST_SUBREDDIT';
 function requestSubreddit(subreddit, order) {
@@ -48,7 +49,11 @@ export function fetchSubreddit(subreddit, order) {
         const state = getState();
         const reddit = getAuthedRedditFromState(state, dispatch);
 
-        getSubredditSubmissions(reddit, subreddit, order)
+        const getSubmissions = subreddit === FRONT_PAGE
+            ? getFrontPageSubmissions(reddit, order)
+            : getSubredditSubmissions(reddit, subreddit, order);
+
+        getSubmissions
             .then(({ submissions, nextSubmissionName }) => {
                 dispatch(receiveSubredditSubmissions(subreddit, order, submissions, nextSubmissionName));
             });
@@ -64,7 +69,11 @@ export function fetchMoreSubmissions(subreddit, order) {
         const nextSubmissionName =
             state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
 
-        getSubredditSubmissions(reddit, subreddit, order, nextSubmissionName)
+        const getSubmissions = subreddit === FRONT_PAGE
+            ? getFrontPageSubmissions(reddit, order, nextSubmissionName)
+            : getSubredditSubmissions(reddit, subreddit, order, nextSubmissionName);
+
+        getSubmissions
             .then(({ submissions, nextSubmissionName: newNextSubmission }) => {
                 dispatch(receiveMoreSubredditSubmissions(subreddit, order, submissions, newNextSubmission));
             });
