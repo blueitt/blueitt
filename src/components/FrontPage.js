@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Col, Row } from 'reactstrap';
 
 import FRONT_PAGE from 'constants/frontPage';
 
@@ -25,30 +26,23 @@ export default class FrontPage extends Component {
     render() {
         return (
             <div>
-                <div>Front page!</div>
+                <Row>
+                    <Col md="9">
+                        {this.renderSubmissions()}
+                    </Col>
 
-                <div>
-                    {this.props.isLoadingFirstSubmissions ? 'loading...' : null}
-                </div>
-
-                {this.props.submissions !== null ? this.renderSubmissions() : null}
+                    <Col md="3">
+                        sidebar goes here
+                    </Col>
+                </Row>
             </div>
         );
     }
 
     renderSubmissions() {
-        const submissions = this.props.submissions.map((submission) => {
-            return (
-                <SubmissionListItem
-                    key={submission.submission.id}
-                    submission={submission.submission}
-                />
-            );
-        });
-
         return (
             <div>
-                {submissions}
+                {this.props.submissions === null ? null : this.renderSubmissionListItems()}
 
                 {this.props.isLoadingMoreSubmissions ? 'loading more' : null }
                 <button onClick={() => this.loadMoreSubmissions()}>
@@ -56,5 +50,16 @@ export default class FrontPage extends Component {
                 </button>
             </div>
         );
+    }
+
+    renderSubmissionListItems() {
+        return this.props.submissions.map((submission) => {
+            return (
+                <SubmissionListItem
+                    key={submission.submission.id}
+                    submission={submission.submission}
+                />
+            );
+        });
     }
 }

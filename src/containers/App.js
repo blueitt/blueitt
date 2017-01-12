@@ -1,4 +1,7 @@
 import React, { Component, PropTypes } from 'react';
+import { Container } from 'reactstrap';
+
+import Navbar from 'components/Navbar';
 
 export default class App extends Component {
     static propTypes = {
@@ -8,8 +11,11 @@ export default class App extends Component {
     render() {
         return (
             <div>
-                <h1>App!</h1>
-                {this.props.children}
+                <Navbar />
+
+                <Container className="App">
+                    {this.props.children}
+                </Container>
             </div>
         );
     }
