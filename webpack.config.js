@@ -33,6 +33,13 @@ module.exports = {
                 loaders: ['style', 'css', 'postcss', 'sass'],
                 include: [srcPath, nodeModulesPath],
             },
+            {
+                // This regex is intentionally strict. Currently, it is only
+                // expected it to match font-awesome.
+                test: /\.(woff|woff2|ttf|svg|eot)(\?v=4\.7\.0)?$/,
+                loaders: ['file'],
+                include: [nodeModulesPath],
+            },
         ],
     },
     resolve: {

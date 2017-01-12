@@ -1,0 +1,55 @@
+$thumbnail-size: 80px;
+
+.SubmissionListItem {
+    border-bottom: 1px solid $gray;
+    padding: 12px 20px;
+}
+
+.SubmissionListItem-summary {
+    color: $gray-light;
+    font-size: 0.8rem;
+}
+
+.SubmissionListItem-author {
+    margin-right: 0.5rem;
+}
+
+.SubmissionListItem-subreddit {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.SubmissionListItem-domain {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.SubmissionListItem-title {
+    margin-top: 0.25rem;
+}
+
+.SubmissionListItem-titleLink {
+    color: $gray-dark;
+    font-size: 1.25rem;
+    line-height: 1.2;
+}
+
+.SubmissionListItem-thumbnail {
+    background-position: center;
+    height: $thumbnail-size;
+    width: $thumbnail-size;
+}
+
+.SubmissionListItem-actionRowItem {
+    text-align: center;
+    color: $gray;
+}
+
+.SubmissionListItem-score {
+    margin-left: 0.5rem;
+    margin-right: 0.5rem;
+}
+
+.SubmissionListItem-numComments {
+    margin-right: 0.5rem;
+}

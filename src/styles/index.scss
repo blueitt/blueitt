@@ -1,4 +1,10 @@
 @import "~bootstrap/scss/bootstrap";
 
+$fa-font-path: "~font-awesome/fonts";
+@import "~font-awesome/scss/font-awesome";
+
 @import "global";
+
+@import "components/FrontPage";
 @import "components/Navbar";
+@import "components/SubmissionListItem";

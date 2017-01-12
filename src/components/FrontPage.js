@@ -25,7 +25,7 @@ export default class FrontPage extends Component {
 
     render() {
         return (
-            <div>
+            <div className="FrontPage">
                 <Row>
                     <Col md="9">
                         {this.renderSubmissions()}
@@ -41,7 +41,7 @@ export default class FrontPage extends Component {
 
     renderSubmissions() {
         return (
-            <div>
+            <div className="FrontPage-submissions">
                 {this.props.submissions === null ? null : this.renderSubmissionListItems()}
 
                 {this.props.isLoadingMoreSubmissions ? 'loading more' : null }
