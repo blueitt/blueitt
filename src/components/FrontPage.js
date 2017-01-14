@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Col, Row } from 'reactstrap';
 import Waypoint from 'react-waypoint';
+import Icon from 'react-fontawesome';
 
 import FRONT_PAGE from 'constants/frontPage';
 
@@ -52,11 +53,7 @@ export default class FrontPage extends Component {
         return (
             <div className="FrontPage-submissions">
                 {this.props.submissions === null ? null : this.renderSubmissionListItems()}
-
-                {this.props.isLoadingMoreSubmissions ? 'loading more' : null }
-                {this.props.isLoadingFirstSubmissions || this.props.isLoadingMoreSubmissions
-                    ? null
-                    : this.renderLoadMore()}
+                {this.props.isLoadingFirstSubmissions ? null : this.renderBottom()}
             </div>
         );
     }
@@ -72,9 +69,37 @@ export default class FrontPage extends Component {
         });
     }
 
-    renderLoadMore() {
+    renderBottom() {
+        return this.props.isLoadingMoreSubmissions
+            ? this.renderIsLoadingMoreSubmissions()
+            : this.renderLoadMoreSubmissions();
+    }
+
+    renderIsLoadingMoreSubmissions() {
         return (
-            <Waypoint onEnter={this.fetchMoreSubmissions} />
+            <div className="FrontPage-isLoadingMoreWrapper">
+                <div className="FrontPage-isLoadingMore">
+                    <Icon name="refresh" className="FrontPage-isLoadingMoreSpinner" spin />
+
+                    Loading more ...
+                </div>
+            </div>
+        );
+    }
+
+    renderLoadMoreSubmissions() {
+        return (
+            <div>
+                <div className="FrontPage-loadMoreWrapper">
+                    <div className="FrontPage-loadMore">
+                        Keep scrolling down to load more
+                    </div>
+                </div>
+
+                <Waypoint onEnter={this.fetchMoreSubmissions} />
+
+                <div className="FrontPage-waypointBuffer" />
+            </div>
         );
     }
 }

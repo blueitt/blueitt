@@ -5,3 +5,35 @@
 .FrontPage-submissions {
     background-color: #fbfbfb;
 }
+
+.FrontPage-isLoadingMoreWrapper {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.FrontPage-loadMoreWrapper {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.FrontPage-loadMore {
+    font-size: 1.5rem;
+}
+
+.FrontPage-isLoadingMoreSpinner {
+    margin-right: 1rem;
+}
+
+// Waypoint doesn't seem to work when it is at the absolute bottom of the page,
+// so this element must be placed after it.
+.FrontPage-waypointBuffer {
+    height: 1px;
+}
+
+.FrontPage-isLoadingMore {
+    font-size: 2rem;
+}
