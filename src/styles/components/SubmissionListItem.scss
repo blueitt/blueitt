@@ -1,8 +1,15 @@
 $thumbnail-size: 80px;
 
 .SubmissionListItem {
-    border-bottom: 1px solid $gray;
-    padding: 12px 20px;
+    border-bottom: 1px solid $gray-light;
+}
+
+.SubmissionListItem-contentArea {
+    padding: 12px 12px;
+}
+
+.SubmissionListItem-leftContent {
+    padding-right: 1rem;
 }
 
 .SubmissionListItem-summary {
@@ -25,7 +32,7 @@ $thumbnail-size: 80px;
 }
 
 .SubmissionListItem-title {
-    margin-top: 0.25rem;
+    margin-top: 5px;
 }
 
 .SubmissionListItem-titleLink {
@@ -34,15 +41,42 @@ $thumbnail-size: 80px;
     line-height: 1.2;
 }
 
+.SubmissionListItem-flair {
+    margin-left: 0.5rem;
+}
+
+.SubmissionListItem-nsfw {
+    margin-left: 0.5rem;
+}
+
 .SubmissionListItem-thumbnail {
+    background-size: cover;
     background-position: center;
     height: $thumbnail-size;
     width: $thumbnail-size;
 }
 
+.SubmissionListItem-actionRow {
+    border-top: 1px solid #ccc;
+    margin-left: 0;
+    margin-right: 0;
+}
+
 .SubmissionListItem-actionRowItem {
+    cursor: pointer;
+    padding-bottom: 12px;
+    padding-top: 12px;
     text-align: center;
     color: $gray;
+    transition: background-color 0.5s;
+
+    &:hover {
+        background-color: #e6e6e6;
+    }
+}
+
+.SubmissionListItem-voteUp {
+    // font-size: 1.2rem;
 }
 
 .SubmissionListItem-score {
@@ -52,4 +86,21 @@ $thumbnail-size: 80px;
 
 .SubmissionListItem-numComments {
     margin-right: 0.5rem;
+}
+
+.SubmissionListItem-save {
+    margin-left: 0.5rem;
+}
+
+.SubmissionListItem-moreActions {
+    margin-left: 0.5rem;
+}
+
+.SubmissionListItem-moreActionsOptionButton {
+    cursor: pointer;
+    padding-left: 1rem;
+}
+
+.SubmissionListItem-moreActionsOptionText {
+    margin-left: 0.5rem;
 }

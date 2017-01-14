@@ -1,38 +1,55 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Icon from 'react-fontawesome';
+import { Badge, Dropdown, DropdownMenu, DropdownItem } from 'reactstrap';
 
 export default class SubmissionListItem extends Component {
     static propTypes = {
         submission: PropTypes.object.isRequired,
     };
 
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            dropdownOpen: false,
+        };
+    }
+
+    toggleDropdown() {
+        this.setState({
+            dropdownOpen: !this.state.dropdownOpen,
+        });
+    }
+
     hasThumbnail() {
         return this.getThumbnailUrl() !== null;
     }
 
     getThumbnailUrl() {
-        const preview = this.props.submission.preview;
+        const thumbnail = this.props.submission.thumbnail;
 
-        if (preview !== undefined) {
-            return `https://i.redditmedia.com/${preview[0]}`;
+        if (thumbnail === 'self' || thumbnail === 'default' || thumbnail === 'nsfw') {
+            return null;
         }
 
-        return null;
+        return thumbnail;
     }
 
     render() {
         return (
             <div className="SubmissionListItem">
-                <div className="d-flex">
-                    <div>
-                        {this.renderSummary()}
-                        {this.renderTitle()}
-                    </div>
+                <div className="SubmissionListItem-contentArea">
+                    <div className="d-flex">
+                        <div className="SubmissionListItem-leftContent">
+                            {this.renderSummary()}
+                            {this.renderTitle()}
+                        </div>
 
 
-                    <div className="ml-auto">
-                        {this.hasThumbnail() ? this.renderThumbnail() : null}
+                        <div className="ml-auto">
+                            {this.hasThumbnail() ? this.renderThumbnail() : null}
+                        </div>
                     </div>
                 </div>
 
@@ -79,13 +96,33 @@ export default class SubmissionListItem extends Component {
                 <a className="SubmissionListItem-titleLink" href={this.props.submission.url}>
                     {this.props.submission.title}
                 </a>
+
+                {this.props.submission.link_flair_text === '' ? null : this.renderFlair()}
+                {this.props.submission.over_18 ? this.renderNsfw() : null}
             </div>
+        );
+    }
+
+    renderFlair() {
+        return (
+            <Badge className="SubmissionListItem-flair">
+                {this.props.submission.link_flair_text}
+            </Badge>
+        );
+    }
+
+    // eslint-disable-next-line class-methods-use-this
+    renderNsfw() {
+        return (
+            <Badge className="SubmissionListItem-nsfw" color="danger">
+                NSFW
+            </Badge>
         );
     }
 
     renderThumbnail() {
         const style = {
-            backgroundImage: `url('${this.props.submission.thumbnail}')`,
+            backgroundImage: `url('${this.getThumbnailUrl()}')`,
         };
 
         return (
@@ -95,29 +132,80 @@ export default class SubmissionListItem extends Component {
 
     renderActionsRow() {
         return (
-            <div className="row">
+            <div className="SubmissionListItem-actionRow row">
                 <div className="SubmissionListItem-actionRowItem col">
-                    <Icon name="arrow-circle-o-up" />
+                    <Icon className="SubmissionListItem-voteUp" name="arrow-circle-o-up" />
 
                     <span className="SubmissionListItem-score">
                         {this.props.submission.score}
                     </span>
 
-                    <Icon name="arrow-circle-o-down" />
+                    <Icon className="SubmissionListItem-voteDown" name="arrow-circle-o-down" />
                 </div>
 
-                <div className="SubmissionListItem-actionRowItem col">
+                <Link
+                    to={`/r/${this.props.submission.subreddit}/comments/${this.props.submission.id}`}
+                    className="SubmissionListItem-actionRowItem col"
+                >
                     <span className="SubmissionListItem-numComments">
                         {this.props.submission.num_comments}
                     </span>
 
                     <Icon name="comment" />
-                </div>
+                </Link>
 
                 <div className="SubmissionListItem-actionRowItem col">
-                    etc
+                    <Icon name="bookmark" />
+
+                    <span className="SubmissionListItem-save">
+                        Save
+                    </span>
                 </div>
+
+                {this.renderMoreActionsDropdown()}
             </div>
+        );
+    }
+
+    renderMoreActionsDropdown() {
+        return (
+            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+            <div
+                className="SubmissionListItem-actionRowItem col"
+                onClick={() => this.toggleDropdown()}
+                data-toggle="dropdown"
+            >
+                <Dropdown isOpen={this.state.dropdownOpen} toggle={() => this.toggleDropdown()}>
+                    <div>
+                        <Icon name="ellipsis-h" />
+
+                        <span className="SubmissionListItem-moreActions">
+                            More
+                        </span>
+                    </div>
+                    <DropdownMenu>
+                        <DropdownItem className="SubmissionListItem-moreActionsOptionButton">
+                            <Icon name="share-alt" fixedWidth />
+                            <span className="SubmissionListItem-moreActionsOptionText">
+                                Share
+                            </span>
+                        </DropdownItem>
+                        <DropdownItem className="SubmissionListItem-moreActionsOptionButton">
+                            <Icon name="flag" fixedWidth />
+                            <span className="SubmissionListItem-moreActionsOptionText">
+                                Report
+                            </span>
+                        </DropdownItem>
+                        <DropdownItem className="SubmissionListItem-moreActionsOptionButton">
+                            <Icon name="ban" fixedWidth />
+                            <span className="SubmissionListItem-moreActionsOptionText">
+                                Hide
+                            </span>
+                        </DropdownItem>
+                    </DropdownMenu>
+                </Dropdown>
+            </div>
+
         );
     }
 }
