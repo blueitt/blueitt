@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Col, Row } from 'reactstrap';
+import Waypoint from 'react-waypoint';
 
 import FRONT_PAGE from 'constants/frontPage';
 
@@ -14,6 +15,14 @@ export default class FrontPage extends Component {
         submissions: PropTypes.array,
         subredditOrder: PropTypes.string.isRequired,
     };
+
+    constructor(props) {
+        super(props);
+
+        this.fetchMoreSubmissions = () => {
+            this.props.onFetchMoreSubmissions(FRONT_PAGE, this.props.subredditOrder);
+        };
+    }
 
     loadMoreSubmissions() {
         this.props.onFetchMoreSubmissions(FRONT_PAGE, this.props.subredditOrder);
@@ -45,9 +54,9 @@ export default class FrontPage extends Component {
                 {this.props.submissions === null ? null : this.renderSubmissionListItems()}
 
                 {this.props.isLoadingMoreSubmissions ? 'loading more' : null }
-                <button onClick={() => this.loadMoreSubmissions()}>
-                    Load more posts
-                </button>
+                {this.props.isLoadingFirstSubmissions || this.props.isLoadingMoreSubmissions
+                    ? null
+                    : this.renderLoadMore()}
             </div>
         );
     }
@@ -61,5 +70,11 @@ export default class FrontPage extends Component {
                 />
             );
         });
+    }
+
+    renderLoadMore() {
+        return (
+            <Waypoint onEnter={this.fetchMoreSubmissions} />
+        );
     }
 }
