@@ -2,33 +2,46 @@ $thumbnail-size: 80px;
 
 .SubmissionListItem {
     border-bottom: 1px solid $gray-light;
+    background-color: #fbfbfb;
+    padding: 12px 12px 0 12px;
 }
 
 .SubmissionListItem-contentArea {
-    padding: 12px 12px;
+    display: flex;
+    justify-content: space-between;
+    padding-bottom: 12px;
+    align-items: center;
 }
 
 .SubmissionListItem-leftContent {
-    padding-right: 1rem;
+    padding-right: 2px;
+}
+
+.SubmissionListItem-rightContent {
+    padding-left: 2px;
 }
 
 .SubmissionListItem-summary {
     color: $gray-light;
-    font-size: 0.8rem;
+    font-size: 0.6rem;
+    word-wrap: break-word;
 }
 
 .SubmissionListItem-author {
-    margin-right: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .SubmissionListItem-subreddit {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
 }
 
 .SubmissionListItem-domain {
-    margin-left: 0.5rem;
-    margin-right: 0.5rem;
+    padding-left: 0.5rem;
+}
+
+.SubmissionListItem-createdAt {
+    padding-left: 0.5rem;
 }
 
 .SubmissionListItem-title {
@@ -89,6 +102,10 @@ $thumbnail-size: 80px;
 }
 
 .SubmissionListItem-save {
+    display: none;
+}
+
+.SubmissionListItem-saveText {
     margin-left: 0.5rem;
 }
 

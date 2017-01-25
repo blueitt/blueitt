@@ -36,13 +36,13 @@ export default class FrontPage extends Component {
     render() {
         return (
             <div className="FrontPage">
-                <Row>
-                    <Col md="9">
-                        {this.renderSubmissions()}
+                <Row className="FrontPage-row">
+                    <Col className="FrontPage-col" xs="12" md="3">
+                        sidebar goes here
                     </Col>
 
-                    <Col md="3">
-                        sidebar goes here
+                    <Col className="FrontPage-col" xs="12" md="9">
+                        {this.renderSubmissions()}
                     </Col>
                 </Row>
             </div>
@@ -53,7 +53,7 @@ export default class FrontPage extends Component {
         return (
             <div className="FrontPage-submissions">
                 {this.props.submissions === null ? null : this.renderSubmissionListItems()}
-                {this.props.isLoadingFirstSubmissions ? null : this.renderBottom()}
+                {/* {this.props.isLoadingFirstSubmissions ? null : this.renderBottom()} */}
             </div>
         );
     }

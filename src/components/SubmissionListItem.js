@@ -39,17 +39,16 @@ export default class SubmissionListItem extends Component {
     render() {
         return (
             <div className="SubmissionListItem">
+                {this.renderSummary()}
+
                 <div className="SubmissionListItem-contentArea">
-                    <div className="d-flex">
-                        <div className="SubmissionListItem-leftContent">
-                            {this.renderSummary()}
-                            {this.renderTitle()}
-                        </div>
 
+                    <div className="SubmissionListItem-leftContent">
+                        {this.renderTitle()}
+                    </div>
 
-                        <div className="ml-auto">
-                            {this.hasThumbnail() ? this.renderThumbnail() : null}
-                        </div>
+                    <div className="SubmissionListItem-rightContent">
+                        {this.hasThumbnail() ? this.renderThumbnail() : null}
                     </div>
                 </div>
 
@@ -154,10 +153,10 @@ export default class SubmissionListItem extends Component {
                     <Icon name="comment" />
                 </Link>
 
-                <div className="SubmissionListItem-actionRowItem col">
+                <div className="SubmissionListItem-actionRowItem SubmissionListItem-save col">
                     <Icon name="bookmark" />
 
-                    <span className="SubmissionListItem-save">
+                    <span className="SubmissionListItem-saveText">
                         Save
                     </span>
                 </div>
@@ -183,7 +182,7 @@ export default class SubmissionListItem extends Component {
                             More
                         </span>
                     </div>
-                    <DropdownMenu>
+                    <DropdownMenu right>
                         <DropdownItem className="SubmissionListItem-moreActionsOptionButton">
                             <Icon name="share-alt" fixedWidth />
                             <span className="SubmissionListItem-moreActionsOptionText">

@@ -2,7 +2,7 @@ import Snoocore from 'snoocore';
 
 // It's called a "reddit" so that snoocore could be changed with some other
 // library with minimal changes to the code.
-function getUnauthedReddit() {
+export function getUnauthedReddit() {
     return new Snoocore({
         userAgent: 'Blueitt v0.0.1',
         oauth: {
