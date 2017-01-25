@@ -14,12 +14,12 @@ export default class SubmissionListItem extends Component {
         this.state = {
             dropdownOpen: false,
         };
-    }
 
-    toggleDropdown() {
-        this.setState({
-            dropdownOpen: !this.state.dropdownOpen,
-        });
+        this.toggle = () => {
+            this.setState({
+                dropdownOpen: !this.state.dropdownOpen,
+            });
+        };
     }
 
     hasThumbnail() {
@@ -168,14 +168,12 @@ export default class SubmissionListItem extends Component {
 
     renderMoreActionsDropdown() {
         return (
-            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
-            <div
-                className="SubmissionListItem-actionRowItem col"
-                onClick={() => this.toggleDropdown()}
-                data-toggle="dropdown"
-            >
-                <Dropdown isOpen={this.state.dropdownOpen} toggle={() => this.toggleDropdown()}>
-                    <div>
+                <Dropdown
+                    className="SubmissionListItem-actionRowItem col"
+                    isOpen={this.state.dropdownOpen}
+                    toggle={this.toggle}
+                >
+                    <div onClick={this.toggle}>
                         <Icon name="ellipsis-h" />
 
                         <span className="SubmissionListItem-moreActions">
@@ -203,8 +201,6 @@ export default class SubmissionListItem extends Component {
                         </DropdownItem>
                     </DropdownMenu>
                 </Dropdown>
-            </div>
-
         );
     }
 }
