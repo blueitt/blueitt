@@ -42,13 +42,6 @@ export default class UserAuthenticator extends Component {
                 this.props.onSaveAccessToken(reddit.oauth.accessToken);
                 this.props.onSaveRefreshToken(refreshToken);
             });
-
-            // const reddit = getSnoocore();
-            //
-            // reddit.auth(authCode).then((refreshToken) => {
-            //     this.props.onSaveRefreshToken(refreshToken);
-            //     this.props.onSaveAccessToken(reddit.getAccessToken());
-            // });
         } else {
             // eslint-disable-next-line no-console
             console.error('authState is not correct, possible CSRF?');
