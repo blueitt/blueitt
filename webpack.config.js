@@ -1,9 +1,15 @@
 const path = require('path');
 const webpack = require('webpack');
+const fs = require('fs');
 
 const distPath = path.join(__dirname, 'dist');
 const srcPath = path.join(__dirname, 'src');
 const nodeModulesPath = path.join(__dirname, 'node_modules');
+
+const envConfigFilename = process.env.NODE_ENV === 'production'
+    ? 'config.prod.json' : 'config.dev.json';
+const envConfigPath = path.join(__dirname, envConfigFilename);
+const envConfig = JSON.parse(fs.readFileSync(envConfigPath));
 
 module.exports = {
     devtool: 'cheap-module-source-map',
@@ -17,6 +23,10 @@ module.exports = {
         publicPath: '/static/',
     },
     plugins: [
+        new webpack.DefinePlugin({
+            WEBPACK_AUTH_REDIRECT_HOST: JSON.stringify(envConfig.authRedirectHost),
+            WEBPACK_OAUTH_KEY: JSON.stringify(envConfig.appOauthKey),
+        }),
         new webpack.optimize.OccurenceOrderPlugin(),
         new webpack.HotModuleReplacementPlugin(),
         new webpack.NoErrorsPlugin(),

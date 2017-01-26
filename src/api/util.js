@@ -8,9 +8,11 @@ export function getUnauthedReddit() {
         oauth: {
             type: 'explicit',
             duration: 'permanent',
-            key: 'wxaZ11pMAfDtLw',
+            // eslint-disable-next-line no-undef
+            key: WEBPACK_OAUTH_KEY,
             secret: '',
-            redirectUri: 'http://127.0.0.1:3000/authenticate',
+            // eslint-disable-next-line no-undef
+            redirectUri: `${WEBPACK_AUTH_REDIRECT_HOST}/authenticate`,
             scope: ['read', 'identity'],
         },
     });
