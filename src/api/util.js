@@ -4,7 +4,25 @@ import Snoocore from 'snoocore';
 // library with minimal changes to the code.
 export function getUnauthedReddit() {
     return new Snoocore({
-        userAgent: 'Blueitt v0.0.1',
+        // eslint-disable-next-line no-undef
+        userAgent: WEBPACK_USER_AGENT,
+        oauth: {
+            type: 'implicit',
+            // eslint-disable-next-line no-undef
+            key: WEBPACK_OAUTH_KEY,
+            secret: '',
+            // eslint-disable-next-line no-undef
+            redirectUri: `${WEBPACK_AUTH_REDIRECT_HOST}/authenticate`,
+            scope: ['read'],
+            deviceId: 'DO_NOT_TRACK_THIS_DEVICE',
+        },
+    });
+}
+
+export function getAuthableReddit() {
+    return new Snoocore({
+        // eslint-disable-next-line no-undef
+        userAgent: WEBPACK_USER_AGENT,
         oauth: {
             type: 'explicit',
             duration: 'permanent',
@@ -19,11 +37,11 @@ export function getUnauthedReddit() {
 }
 
 export function getAuthUrl(authState) {
-    return getUnauthedReddit().getAuthUrl(authState);
+    return getAuthableReddit().getAuthUrl(authState);
 }
 
 export function getAuthedReddit(accessToken, refreshToken, onSaveAccessToken) {
-    const reddit = getUnauthedReddit();
+    const reddit = getAuthableReddit();
 
     reddit.setAccessToken(accessToken);
     reddit.setRefreshToken(refreshToken);

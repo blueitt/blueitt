@@ -6,18 +6,12 @@ export function saveAuthState(authState) {
     };
 }
 
-export const SAVE_ACCESS_TOKEN = 'SAVE_ACCESS_TOKEN';
-export function saveAccessToken(accessToken) {
+export const SAVE_ACCOUNT_AUTH_TOKENS = 'SAVE_ACCOUNT_AUTH_TOKENS';
+export function saveAccountAuthTokens(account, accessToken, refreshToken) {
     return {
-        type: SAVE_ACCESS_TOKEN,
+        type: SAVE_ACCOUNT_AUTH_TOKENS,
+        account,
         accessToken,
-    };
-}
-
-export const SAVE_REFRESH_TOKEN = 'SAVE_REFRESH_TOKEN';
-export function saveRefreshToken(refreshToken) {
-    return {
-        type: SAVE_REFRESH_TOKEN,
         refreshToken,
     };
 }

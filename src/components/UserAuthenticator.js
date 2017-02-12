@@ -2,14 +2,14 @@ import React, { Component, PropTypes } from 'react';
 
 import uuid from 'uuid';
 
-import { getAuthUrl, getUnauthedReddit } from 'api/util';
+import { getAuthUrl, getAuthableReddit } from 'api/util';
 
 export default class UserAuthenticator extends Component {
     static propTypes = {
-        savedAuthState: PropTypes.string,
-        onSaveAccessToken: PropTypes.func.isRequired,
+        onSaveAccountAuthTokens: PropTypes.func.isRequired,
         onSaveAuthState: PropTypes.func.isRequired,
-        onSaveRefreshToken: PropTypes.func.isRequired,
+        onSetCurrentAccount: PropTypes.func.isRequired,
+        savedAuthState: PropTypes.string,
     };
 
     constructor(props) {
@@ -36,11 +36,17 @@ export default class UserAuthenticator extends Component {
         const authState = urlParams[urlParams.indexOf('state') + 2];
 
         if (authState === this.props.savedAuthState) {
-            const reddit = getUnauthedReddit();
+            const reddit = getAuthableReddit();
 
-            reddit.auth(authCode).then((refreshToken) => {
-                this.props.onSaveAccessToken(reddit.oauth.accessToken);
-                this.props.onSaveRefreshToken(refreshToken);
+            reddit.auth(authCode).then(() => {
+                return reddit('/api/v1/me').get();
+            }).then((userDetails) => {
+                const currentAccount = userDetails.name;
+                const accessToken = reddit.oauth.accessToken;
+                const refreshToken = reddit.oauth.refreshToken;
+
+                this.props.onSaveAccountAuthTokens(currentAccount, accessToken, refreshToken);
+                this.props.onSetCurrentAccount(currentAccount);
             });
         } else {
             // eslint-disable-next-line no-console

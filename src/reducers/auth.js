@@ -1,12 +1,10 @@
 import {
     SAVE_AUTH_STATE,
-    SAVE_ACCESS_TOKEN,
-    SAVE_REFRESH_TOKEN,
+    SAVE_ACCOUNT_AUTH_TOKENS,
 } from 'actions/auth';
 
 const DEFAULT_AUTH_STATE = {
-    accessToken: null,
-    refreshToken: null,
+    tokens: {},
     state: null,
 };
 
@@ -17,15 +15,16 @@ export default function auth(state = DEFAULT_AUTH_STATE, action) {
             ...state,
             state: action.authState,
         };
-    case SAVE_ACCESS_TOKEN:
+    case SAVE_ACCOUNT_AUTH_TOKENS:
         return {
             ...state,
-            accessToken: action.accessToken,
-        };
-    case SAVE_REFRESH_TOKEN:
-        return {
-            ...state,
-            refreshToken: action.refreshToken,
+            tokens: {
+                ...state.tokens,
+                [action.account]: {
+                    accessToken: action.accessToken,
+                    refreshToken: action.refreshToken,
+                },
+            },
         };
     default:
         return state;

@@ -2,25 +2,26 @@ import React, { Component, PropTypes } from 'react';
 import { bindActionCreators } from 'redux';
 import { connect } from 'react-redux';
 
-import { saveAuthState, saveAccessToken, saveRefreshToken } from 'actions/auth';
+import { setCurrentAccount } from 'actions/accounts';
+import { saveAuthState, saveAccountAuthTokens } from 'actions/auth';
 
 import UserAuthenticator from 'components/UserAuthenticator';
 
 class UserAuthenticatorContainer extends Component {
     static propTypes = {
-        savedAuthState: PropTypes.string,
-        onSaveAccessToken: PropTypes.func.isRequired,
+        onSaveAccountAuthTokens: PropTypes.func.isRequired,
         onSaveAuthState: PropTypes.func.isRequired,
-        onSaveRefreshToken: PropTypes.func.isRequired,
+        onSetCurrentAccount: PropTypes.func.isRequired,
+        savedAuthState: PropTypes.string,
     };
 
     render() {
         return (
             <UserAuthenticator
-                savedAuthState={this.props.savedAuthState}
-                onSaveAccessToken={this.props.onSaveAccessToken}
+                onSaveAccountAuthTokens={this.props.onSaveAccountAuthTokens}
                 onSaveAuthState={this.props.onSaveAuthState}
-                onSaveRefreshToken={this.props.onSaveRefreshToken}
+                onSetCurrentAccount={this.props.onSetCurrentAccount}
+                savedAuthState={this.props.savedAuthState}
             />
         );
     }
@@ -34,9 +35,9 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return bindActionCreators({
+        onSaveAccountAuthTokens: saveAccountAuthTokens,
         onSaveAuthState: saveAuthState,
-        onSaveAccessToken: saveAccessToken,
-        onSaveRefreshToken: saveRefreshToken,
+        onSetCurrentAccount: setCurrentAccount,
     }, dispatch);
 }
 

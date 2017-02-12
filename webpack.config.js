@@ -25,6 +25,7 @@ module.exports = {
     plugins: [
         new webpack.DefinePlugin({
             WEBPACK_AUTH_REDIRECT_HOST: JSON.stringify(envConfig.authRedirectHost),
+            WEBPACK_USER_AGENT: JSON.stringify(envConfig.userAgent),
             WEBPACK_OAUTH_KEY: JSON.stringify(envConfig.appOauthKey),
         }),
         new webpack.optimize.OccurenceOrderPlugin(),

@@ -1,4 +1,4 @@
-import { getAuthedRedditFromState } from 'actions/util';
+import { getRedditFromState } from 'actions/util';
 import { getSubmission, getMoreComments } from 'api/submissions';
 
 import {
@@ -38,7 +38,7 @@ export function fetchSubmission(submissionId) {
         dispatch(requestSubmission(submissionId));
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state, dispatch);
+        const reddit = getRedditFromState(state, dispatch);
 
         getSubmission(reddit, submissionId)
             .then(({ submission, comments }) => {
@@ -78,7 +78,7 @@ export function fetchMoreSubmissionComments(submissionId, fetchRootComments, par
         }
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state, dispatch);
+        const reddit = getRedditFromState(state, dispatch);
         const moreComments = fetchRootComments
             ? state.reddit.submissions[submissionId].moreCommentsIds
             : state.reddit.comments[parentCommentId].moreRepliesIds;

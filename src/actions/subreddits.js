@@ -1,4 +1,4 @@
-import { getAuthedRedditFromState } from 'actions/util';
+import { getRedditFromState } from 'actions/util';
 import { getFrontPageSubmissions, getSubredditSubmissions } from 'api/subreddits';
 import FRONT_PAGE from 'constants/frontPage';
 
@@ -47,7 +47,7 @@ export function fetchSubreddit(subreddit, order) {
         dispatch(requestSubreddit(subreddit, order));
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state, dispatch);
+        const reddit = getRedditFromState(state, dispatch);
 
         const getSubmissions = subreddit === FRONT_PAGE
             ? getFrontPageSubmissions(reddit, order)
@@ -65,7 +65,7 @@ export function fetchMoreSubmissions(subreddit, order) {
         dispatch(requestMoreSubredditSubmissions(subreddit, order));
 
         const state = getState();
-        const reddit = getAuthedRedditFromState(state, dispatch);
+        const reddit = getRedditFromState(state, dispatch);
         const nextSubmissionName =
             state.reddit.subreddits[subreddit].submissions[order].nextSubmissionName;
 
