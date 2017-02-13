@@ -8,8 +8,8 @@ export function getRedditFromState(state, dispatch) {
     };
 
     if (state.accounts.activeAccount !== null) {
-        const auth = state.auth[state.currentAccount];
-        return getAuthedReddit(auth.accessToken, auth.refreshToken, onSaveAccessToken);
+        const tokens = state.auth.tokens[state.accounts.activeAccount];
+        return getAuthedReddit(tokens.accessToken, tokens.refreshToken, onSaveAccessToken);
     }
 
     return getUnauthedReddit();
